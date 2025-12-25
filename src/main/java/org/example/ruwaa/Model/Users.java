@@ -1,9 +1,7 @@
 package org.example.ruwaa.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,6 +39,21 @@ public class Users implements UserDetails
     private String role;
 
     private LocalDateTime createdAt;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
+    @PrimaryKeyJoinColumn
+    private Customer customer;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
+    @PrimaryKeyJoinColumn
+    private Expert expert;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "users")
+    private List<Media> medias;
+
+    @OneToOne
+    @JsonIgnore
+    private Message message;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

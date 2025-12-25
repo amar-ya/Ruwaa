@@ -1,0 +1,61 @@
+package org.example.ruwaa.Service;
+
+import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Api.ApiException;
+import org.example.ruwaa.Model.Expert;
+import org.example.ruwaa.Model.Media;
+import org.example.ruwaa.Model.Review;
+import org.example.ruwaa.Repository.ExpertRepository;
+import org.example.ruwaa.Repository.MediaRepository;
+import org.example.ruwaa.Repository.ReviewRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ReviewService
+{
+    private final ReviewRepository reviewRepository;
+    private final MediaRepository mediaRepository;
+    private final ExpertRepository expertRepository;
+
+    public List<Review> getAll(){
+        List<Review> reviews = reviewRepository.findAll();
+        if (reviews.isEmpty()){
+            throw new ApiException("no reviews found");
+        }
+        return reviews;
+    }
+
+    public void add(Integer expert_id,Integer media_id,Review review){
+        Expert e = expertRepository.findExpertById(expert_id);
+        if (e == null){
+            throw new ApiException("expert not found");
+        }
+        Media m = mediaRepository.findMediaById(media_id);
+        if (m == null){
+            throw new ApiException("media not found");
+        }
+        review.setMedia(m);
+        review.setExpert(e);
+        reviewRepository.save(review);
+    }
+
+    public void update(Integer id, Review review){
+        Review r = reviewRepository.findReviewById(id);
+        if (r == null){
+            throw new ApiException("review not found");
+        }
+        r.setContent(review.getContent());
+        reviewRepository.save(r);
+    }
+
+    public void delete(Integer id){
+        Review r = reviewRepository.findReviewById(id);
+        if (r == null){
+            throw new ApiException("review not found");
+        }
+        reviewRepository.delete(r);
+    }
+}
