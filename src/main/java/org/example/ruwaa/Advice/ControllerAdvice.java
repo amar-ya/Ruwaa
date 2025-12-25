@@ -1,6 +1,7 @@
 package org.example.ruwaa.Advice;
 
 
+import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ConstraintViolationException;
 import org.example.ruwaa.Api.ApiException;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @org.springframework.web.bind.annotation.ControllerAdvice
@@ -68,12 +70,22 @@ public class ControllerAdvice
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> Exception(Exception e){
-        return ResponseEntity.status(500).body(new ApiResponse(e.getMessage()));
+        return ResponseEntity.status(400).body(new ApiResponse(e.getMessage()));
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
     public ResponseEntity<?> UsernameNotFoundException(UsernameNotFoundException e){
-        return ResponseEntity.status(500).body(new ApiResponse(e.getMessage()));
+        return ResponseEntity.status(400).body(new ApiResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(value = ServletException.class)
+    public ResponseEntity<?> ServletException(ServletException e){
+        return ResponseEntity.status(400).body(new ApiResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(value = IOException.class)
+    public ResponseEntity<?> IOException(IOException e){
+        return ResponseEntity.status(400).body(new ApiResponse(e.getMessage()));
     }
 
 }
