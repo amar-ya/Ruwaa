@@ -41,4 +41,8 @@ public class ExpertService
 
         expertRepository.delete(e);
     }
+
+    public Expert findMostActiveExpertByCategory(String category){
+        return expertRepository.findMostActiveExpert(category).orElseThrow(() -> new ApiException("no experts added to this category"));
+    }
 }

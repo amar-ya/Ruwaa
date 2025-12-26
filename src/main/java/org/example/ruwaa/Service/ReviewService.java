@@ -50,4 +50,20 @@ public class ReviewService
 
         reviewRepository.delete(r);
     }
+
+    public List<Review> getFinishedReviews(){
+        List<Review> r = reviewRepository.findFinishedReviews();
+        if (r.isEmpty()){
+            throw new ApiException("there are no finished reviews");
+        }
+        return r;
+    }
+
+    public List<Review> getUnfinishedReviews(){
+        List<Review> r = reviewRepository.findUnfinishedReviews();
+        if (r.isEmpty()){
+            throw new ApiException("there are no unfinished reviews");
+        }
+        return r;
+    }
 }

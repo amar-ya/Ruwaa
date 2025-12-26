@@ -30,6 +30,13 @@ public class Configuration
                         .requestMatchers("/api/v1/auth/signup/customer",
                                 "/api/v1/auth/signup/expert",
                                 "/api/v1/auth/login").permitAll()
+
+                        .requestMatchers("/api/v1/review/finished",
+                                "/api/v1/review//unfinished").hasAuthority("EXPERT")
+
+                        .requestMatchers("/api/v1/expert//most-active/category/{category}").hasAuthority("CUSTOMER")
+
+
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

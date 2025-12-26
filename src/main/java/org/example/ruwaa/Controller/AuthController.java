@@ -24,8 +24,8 @@ public class AuthController
     }
 
     @PostMapping("/signup/expert")
-    public ResponseEntity<?> signupExpert (@RequestParam("cv") MultipartFile cv, @RequestBody @Valid RegisterExpertRequest auth){
-        return ResponseEntity.status(200).body(authService.expertSignUp(cv, auth));
+    public ResponseEntity<?> signupExpert ( @RequestBody @Valid RegisterExpertRequest auth){
+        return ResponseEntity.status(200).body(authService.expertSignUp(auth));
     }
 
     @PostMapping("/signup/customer")
