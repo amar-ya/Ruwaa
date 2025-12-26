@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +18,8 @@ import static java.util.logging.Level.parse;
 public class JwtUtil
 {
 
-    private final String secret = "${jwt.secret}";
+    @Value("${jwt.secret}")
+    private String secret;
     private final long expiration = 15 * 60 * 1000;
 
     public String generateToken(UserDetails user){
@@ -25,7 +28,7 @@ public class JwtUtil
                 .claim("role", user.getAuthorities())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.ES256)
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
