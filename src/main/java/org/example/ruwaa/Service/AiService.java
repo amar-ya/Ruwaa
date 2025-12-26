@@ -20,6 +20,40 @@ public class AiService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public String askAI(String prompt){
-        return "";
+        String body = "{\n" +
+                "  \"model\": \"gpt-4o-mini\",\n" +
+                "  \"messages\": [\n" +
+                "    {\"role\": \"user\", \"content\": \"" + prompt.replace("\"","\\\"") + "\"}\n" +
+                "  ]\n" +
+                "}";
 
-    }}
+        String raw = webClient.post()
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        try {
+            JsonNode json = mapper.readTree(raw);
+            return json.get("choices")
+                    .get(0)
+                    .get("message")
+                    .get("content")
+                    .asText();
+
+        } catch (Exception e) {
+            return "AI parsing error: " + e.getMessage() + "\n Raw: " + raw;
+        }
+
+    }
+
+
+//    public String testAI(){
+//    return askAI("can you replay me with hello in arabic?");
+//    }
+
+
+
+}
