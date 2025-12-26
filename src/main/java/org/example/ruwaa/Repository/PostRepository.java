@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface MediaRepository extends JpaRepository<Post, Integer>
+public interface PostRepository extends JpaRepository<Post, Integer>
 {
     @Query("select m from Post m where m.id =:id")
     Optional<Post> findMediaById(Integer id);

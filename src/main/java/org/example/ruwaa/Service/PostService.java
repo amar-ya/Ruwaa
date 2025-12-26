@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.Model.Post;
 import org.example.ruwaa.Model.Users;
-import org.example.ruwaa.Repository.MediaRepository;
+import org.example.ruwaa.Repository.PostRepository;
 import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,37 +12,37 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MediaService
+public class PostService
 {
-    private final MediaRepository mediaRepository;
+    private final PostRepository postRepository;
     private final UsersRepository usersRepository;
 
     public List<Post> getAll(){
-        List<Post> postList = mediaRepository.findAll();
+        List<Post> postList = postRepository.findAll();
         if (postList.isEmpty()){
             throw new ApiException("expert not found");
         }
         return postList;
     }
 
-    public void addMedia(String username, Post post){
+    public void addPost(String username, Post post){
         Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
 
         post.setUsers(u);
-        mediaRepository.save(post);
+        postRepository.save(post);
     }
 
-    public void update(Integer id, Post post){
-        Post m = mediaRepository.findMediaById(id).orElseThrow(() -> new ApiException("media not found"));
+    public void updatePost(Integer id, Post post){
+        Post m = postRepository.findMediaById(id).orElseThrow(() -> new ApiException("post not found"));
 
         m.setTitle(post.getTitle());
         m.setContent(post.getContent());
-        mediaRepository.save(m);
+        postRepository.save(m);
     }
 
-    public void deleteMedia(Integer id){
-        Post m = mediaRepository.findMediaById(id).orElseThrow(() -> new ApiException("media not found"));
+    public void deletePost(Integer id){
+        Post m = postRepository.findMediaById(id).orElseThrow(() -> new ApiException("post not found"));
 
-        mediaRepository.delete(m);
+        postRepository.delete(m);
     }
 }

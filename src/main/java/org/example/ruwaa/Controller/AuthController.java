@@ -7,6 +7,7 @@ import org.example.ruwaa.DTOs.AuthRequest;
 import org.example.ruwaa.DTOs.RegisterCustomerRequest;
 import org.example.ruwaa.DTOs.RegisterExpertRequest;
 import org.example.ruwaa.Service.AuthService;
+import org.example.ruwaa.Service.SendMailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
