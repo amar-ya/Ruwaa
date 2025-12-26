@@ -20,5 +20,6 @@ public class RegisterCustomerRequest
     private String username;
     @NotEmpty(message = "password is required")
     private String password;
+    @NotEmpty
     private String phone_number;
 }
