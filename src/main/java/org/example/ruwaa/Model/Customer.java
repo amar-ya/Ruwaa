@@ -17,15 +17,16 @@ import java.time.LocalDateTime;
 public class Customer
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private LocalDateTime subscriptionDate;
 
     @OneToOne
     @MapsId
     @JsonIgnore
     private Users users;
+
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "customer")
+    @PrimaryKeyJoinColumn
+    private Subscription subscription;
 
 
 }

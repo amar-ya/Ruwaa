@@ -15,6 +15,8 @@ import org.example.ruwaa.Repository.UsersRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -28,10 +30,8 @@ public class AuthService  {
     private final CustomerRepository customerRepository;
 
     public AuthResponse login(AuthRequest auth){
-        Users u = usersRepository.findUserByUsername(auth.getUsername()).orElseThrow(() -> new ApiException(""));
-        if(u == null){
-            throw new ApiException("wrong username");
-        }
+        Users u = usersRepository.findUserByUsername(auth.getUsername()).orElseThrow(() -> new ApiException("wrong username"));
+
         if (!passwordEncoder.matches(auth.getPassword(), u.getPassword())){
             throw new ApiException("wrong password");
         }
@@ -41,7 +41,7 @@ public class AuthService  {
         return new AuthResponse(token, u.getUsername(), u.getRole());
     }
 
-    public AuthResponse expertSignUp(RegisterExpertRequest auth){
+    public AuthResponse expertSignUp(MultipartFile cv, RegisterExpertRequest auth){
         if (!isUnique(auth.getUsername(), auth.getEmail() )){
             throw new ApiException("username or email already exists");
         }

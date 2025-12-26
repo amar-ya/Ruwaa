@@ -26,6 +26,8 @@ public class Users implements UserDetails
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String about_me;
+
     private String name;
 
     private String username;
@@ -49,7 +51,7 @@ public class Users implements UserDetails
     private Expert expert;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "users")
-    private List<Media> medias;
+    private List<Post> posts;
 
     @OneToOne
     @JsonIgnore

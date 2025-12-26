@@ -3,7 +3,7 @@ package org.example.ruwaa.Service;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.Model.Expert;
-import org.example.ruwaa.Model.Media;
+import org.example.ruwaa.Model.Post;
 import org.example.ruwaa.Model.Review;
 import org.example.ruwaa.Repository.ExpertRepository;
 import org.example.ruwaa.Repository.MediaRepository;
@@ -31,9 +31,9 @@ public class ReviewService
     public void add(Integer expert_id,Integer media_id,Review review){
         Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
 
-        Media m = mediaRepository.findMediaById(media_id).orElseThrow(() -> new ApiException("media not found"));
+        Post m = mediaRepository.findMediaById(media_id).orElseThrow(() -> new ApiException("media not found"));
 
-        review.setMedia(m);
+        review.setPost(m);
         review.setExpert(e);
         reviewRepository.save(review);
     }

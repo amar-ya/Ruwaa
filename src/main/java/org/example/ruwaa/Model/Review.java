@@ -28,7 +28,7 @@ public class Review
 
     @ManyToOne
     @JsonIgnore
-    private Media media;
+    private Post post;
 
 
 

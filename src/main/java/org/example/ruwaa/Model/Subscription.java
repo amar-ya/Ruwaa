@@ -7,41 +7,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Expert
+public class Subscription
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private String category;
+    private Double price;
 
-    private String about_me;
-
-    private String Linkedin_url;
-
-    private Integer review_count;
-
-    private Double consult_price;
-
-    private Boolean isAvailable;
-
-    private Boolean isActive;
-
-    private byte[] data;
-
-
+    private LocalDateTime subscription_date;
 
     @OneToOne
     @MapsId
     @JsonIgnore
-    private Users users;
-
-    @OneToOne
-    @JsonIgnore
-    private Review review;
+    private Customer customer;
 }

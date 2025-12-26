@@ -12,18 +12,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Resume
+public class Attachments
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
+    private String name;
 
+    private String type;
 
-    @OneToOne
-    @MapsId
+    private byte[] date;
+
+    @ManyToOne
     @JsonIgnore
-    private Expert expert;
-
-
+    private Post post;
 }

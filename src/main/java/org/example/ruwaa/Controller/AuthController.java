@@ -9,6 +9,7 @@ import org.example.ruwaa.DTOs.RegisterExpertRequest;
 import org.example.ruwaa.Service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -23,13 +24,12 @@ public class AuthController
     }
 
     @PostMapping("/signup/expert")
-    public ResponseEntity<?> signupExpert (@RequestBody @Valid RegisterExpertRequest auth){
-        return ResponseEntity.status(200).body(authService.expertSignUp(auth));
+    public ResponseEntity<?> signupExpert (@RequestParam("cv") MultipartFile cv, @RequestBody @Valid RegisterExpertRequest auth){
+        return ResponseEntity.status(200).body(authService.expertSignUp(cv, auth));
     }
 
     @PostMapping("/signup/customer")
     public ResponseEntity<?> signupCustomer (@RequestBody @Valid RegisterCustomerRequest auth){
-        System.out.println("Controller: "+auth);
         return ResponseEntity.status(200).body(authService.registerCustomer(auth));
     }
 }
