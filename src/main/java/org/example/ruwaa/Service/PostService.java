@@ -79,4 +79,15 @@ public class PostService
         postRepository.save(p);
 
     }
+
+    //1)  7
+    public void changeVisibilityToPrivate(Integer postId){
+        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
+        if(p.getType().equals("private_work")) throw new ApiException("this work is already Private");
+
+        p.setType("private_work");
+        postRepository.save(p);
+
+    }
 }
