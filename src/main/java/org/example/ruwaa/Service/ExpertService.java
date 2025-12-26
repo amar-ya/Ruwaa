@@ -3,8 +3,10 @@ package org.example.ruwaa.Service;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.Model.Expert;
+import org.example.ruwaa.Model.Review;
 import org.example.ruwaa.Model.Users;
 import org.example.ruwaa.Repository.ExpertRepository;
+import org.example.ruwaa.Repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 public class ExpertService
 {
     private final ExpertRepository expertRepository;
+    private final ReviewRepository reviewRepository;
 
     public List<Expert> getAll(){
         List<Expert> experts = expertRepository.findAll();
@@ -44,5 +47,34 @@ public class ExpertService
 
     public Expert findMostActiveExpertByCategory(String category){
         return expertRepository.findMostActiveExpert(category).orElseThrow(() -> new ApiException("no experts added to this category"));
+    }
+
+    public void acceptReview (Integer reviewId, Review review) {
+        Review review1 = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
+
+        review1.setStatus("Accepted");
+        review1.setContent(review.getContent());
+        reviewRepository.save(review1);
+    }
+
+
+    public void rejectReview (Integer reviewId) {
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
+
+        review.setStatus("Rejected");
+    }
+
+
+    public void rejectAll (Integer expertId) {
+        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+
+        List<Review> reviews = reviewRepository.findAllByExpert(expert);
+
+        for (Review review : reviews) {
+            if (review.getStatus().equals("Pending")) {
+                review.setStatus("Rejected");
+            }
+        }
+        reviewRepository.saveAll(reviews);
     }
 }

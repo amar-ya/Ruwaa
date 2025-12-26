@@ -1,11 +1,10 @@
 package org.example.ruwaa.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Service.ReviewService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/review")
@@ -22,5 +21,11 @@ public class ReviewController
     @GetMapping("/unfinished")
     public ResponseEntity<?> getUnfinishedReviews(){
         return ResponseEntity.status(200).body(reviewService.getUnfinishedReviews());
+    }
+
+    @PutMapping("/request-review/{postId}/{expertId}")
+    public ResponseEntity<?> requestReview (@PathVariable Integer postId, @PathVariable Integer expertId) {
+        reviewService.requestReview(postId, expertId);
+        return ResponseEntity.status(200).body(new ApiResponse("Request send successfully"));
     }
 }
