@@ -1,4 +1,35 @@
 package org.example.ruwaa.Controller;
 
-public class AuthController {
+import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.DTOs.AuthRequest;
+import org.example.ruwaa.DTOs.RegisterCustomerRequest;
+import org.example.ruwaa.DTOs.RegisterExpertRequest;
+import org.example.ruwaa.Service.AuthService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+public class AuthController
+{
+    private final AuthService authService;
+
+    @GetMapping("/login")
+    public ResponseEntity<?> login (@RequestBody AuthRequest auth){
+        return ResponseEntity.status(200).body(authService.login(auth));
+    }
+
+    @PostMapping("/signup/expert")
+    public ResponseEntity<?> signupExpert (@RequestBody @Valid RegisterExpertRequest auth){
+        return ResponseEntity.status(200).body(authService.expertSignUp(auth));
+    }
+
+    @PostMapping("/signup/customer")
+    public ResponseEntity<?> signupCustomer (@RequestBody @Valid RegisterCustomerRequest auth){
+        System.out.println("Controller: "+auth);
+        return ResponseEntity.status(200).body(authService.registerCustomer(auth));
+    }
 }

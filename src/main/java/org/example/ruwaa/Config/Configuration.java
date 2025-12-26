@@ -1,7 +1,7 @@
 package org.example.ruwaa.Config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.ruwaa.JWT.JwtFilter;
+import org.example.ruwaa.Config.JWT.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,15 +25,14 @@ public class Configuration
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/signup/customer",
+                                "/api/v1/auth/signup/expert",
+                                "/api/v1/auth/login").permitAll()
                         .anyRequest().authenticated())
 
-                .addFilterBefore(jwtFilter,
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

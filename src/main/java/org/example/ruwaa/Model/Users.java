@@ -55,6 +55,9 @@ public class Users implements UserDetails
     @JsonIgnore
     private Message message;
 
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "users", orphanRemoval = true)
+    private List<Card> cards;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(this.role));

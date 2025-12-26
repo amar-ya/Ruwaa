@@ -24,10 +24,7 @@ public class CustomerService
     }
 
     public void update(Integer id, Users user){
-        Customer c = customerRepository.findCustomerById(id);
-        if (c == null){
-            throw new ApiException("customer not found");
-        }
+        Customer c = customerRepository.findCustomerById(id).orElseThrow(()-> new ApiException("customer not found"));
         Users u =  c.getUsers();
         u.setUsername(user.getUsername());
         u.setPassword(user.getPassword());
@@ -39,10 +36,7 @@ public class CustomerService
     }
 
     public void delete(Integer id){
-        Customer c = customerRepository.findCustomerById(id);
-        if (c == null){
-            throw new ApiException("customer not found");
-        }
+        Customer c = customerRepository.findCustomerById(id).orElseThrow(() -> new ApiException("customer not found"));
         customerRepository.delete(c);
     }
 }

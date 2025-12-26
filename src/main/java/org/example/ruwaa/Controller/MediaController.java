@@ -1,7 +1,13 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Model.Media;
 import org.example.ruwaa.Service.MediaService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,4 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class MediaController
 {
     private final MediaService mediaService;
+
+    @PostMapping("/post")
+    public void postMedia(@RequestBody @Valid Media media, @AuthenticationPrincipal Authentication auth){
+        mediaService.addMedia(auth.getName(), media);
+
+    }
 }

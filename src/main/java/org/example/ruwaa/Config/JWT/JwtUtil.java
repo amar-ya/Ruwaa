@@ -1,4 +1,4 @@
-package org.example.ruwaa.JWT;
+package org.example.ruwaa.Config.JWT;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -42,4 +42,6 @@ public class JwtUtil
                 .build()
                 .parseClaimsJws(token);
     }
+
+
 }

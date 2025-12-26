@@ -25,30 +25,24 @@ public class MediaService
         return mediaList;
     }
 
-    public void addMedia(Integer user_id, Media media){
-        Users u = usersRepository.findUserById(user_id);
-        if (u == null){
-            throw new ApiException("Error couldnt post");
-        }
+    public void addMedia(String username, Media media){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+
         media.setUsers(u);
         mediaRepository.save(media);
     }
 
     public void update(Integer id, Media media){
-        Media m = mediaRepository.findMediaById(id);
-        if (m == null){
-            throw new ApiException("media not found");
-        }
+        Media m = mediaRepository.findMediaById(id).orElseThrow(() -> new ApiException("media not found"));
+
         m.setTitle(media.getTitle());
         m.setContent(media.getContent());
         mediaRepository.save(m);
     }
 
     public void deleteMedia(Integer id){
-        Media m = mediaRepository.findMediaById(id);
-        if (m == null){
-            throw new ApiException("media not found");
-        }
+        Media m = mediaRepository.findMediaById(id).orElseThrow(() -> new ApiException("media not found"));
+
         mediaRepository.delete(m);
     }
 }

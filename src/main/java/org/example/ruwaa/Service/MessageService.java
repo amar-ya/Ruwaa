@@ -30,14 +30,9 @@ public class MessageService
     }
 
     public void send(Integer user_id,Integer chat_id, Message m){
-        Users u = usersRepository.findUserById(user_id);
-        if (u == null){
-            throw new ApiException("Error couldnt send message");
-        }
-        Chat c = chatRepository.findChatById(chat_id);
-        if (c == null){
-            throw new ApiException("invalid chat");
-        }
+        Users u = usersRepository.findUserById(user_id).orElseThrow(() -> new ApiException("user not found"));
+
+        Chat c = chatRepository.findChatById(chat_id).orElseThrow(() -> new ApiException("chat not found"));
         if (!c.getIsOpen()){
             throw new ApiException("chat is closed");
         }
@@ -48,19 +43,15 @@ public class MessageService
     }
 
     public void update(Integer id, String text){
-        Message m = messageRepository.findMessageById(id);
-        if (m == null){
-            throw new ApiException("message not found");
-        }
+        Message m = messageRepository.findMessageById(id).orElseThrow(() -> new ApiException("message not found"));
+
         m.setText(text);
         messageRepository.save(m);
     }
 
     public void delete(Integer id){
-        Message m = messageRepository.findMessageById(id);
-        if (m == null){
-            throw new ApiException("message not found");
-        }
+        Message m = messageRepository.findMessageById(id).orElseThrow(() -> new ApiException("message not found"));
+
         messageRepository.delete(m);
     }
 }

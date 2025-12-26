@@ -12,36 +12,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Expert
+public class Card
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String card_number;
+    private String card_holder;
+    private String month_expiry;
+    private String year_expiry;
+    private String card_cvv;
 
-    private String category;
-
-    private String about_me;
-
-    private String Linkedin_url;
-
-    private Integer review_count;
-
-    private Double consult_price;
-
-    private Boolean isActive;
-
-
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "expert")
-    @PrimaryKeyJoinColumn
-    private Resume resume;
-
-
-    @OneToOne
-    @MapsId
+    @ManyToOne
     @JsonIgnore
     private Users users;
-
-    @OneToOne
-    @JsonIgnore
-    private Review review;
 }

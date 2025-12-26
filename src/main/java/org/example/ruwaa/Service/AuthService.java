@@ -1,29 +1,94 @@
 package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Api.ApiException;
+import org.example.ruwaa.DTOs.AuthRequest;
+import org.example.ruwaa.DTOs.AuthResponse;
+import org.example.ruwaa.DTOs.RegisterCustomerRequest;
+import org.example.ruwaa.DTOs.RegisterExpertRequest;
+import org.example.ruwaa.Config.JWT.JwtUtil;
+import org.example.ruwaa.Model.Customer;
+import org.example.ruwaa.Model.Expert;
 import org.example.ruwaa.Model.Users;
+import org.example.ruwaa.Repository.CustomerRepository;
 import org.example.ruwaa.Repository.UsersRepository;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService {
+public class AuthService  {
 
     private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final CustomerRepository customerRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users u = usersRepository.findUserByUsername(username);
-        if (u == null){
-            throw new UsernameNotFoundException("username or password is incorrect");
+    public AuthResponse login(AuthRequest auth){
+        Users u = usersRepository.findUserByUsername(auth.getUsername()).orElseThrow(() -> new ApiException(""));
+        if(u == null){
+            throw new ApiException("wrong username");
         }
-        return org.springframework.security.core.userdetails.User
-                .withUsername(u.getUsername())
-                .password(u.getPassword())
-                .authorities(u.getRole())
-                .build();
+        if (!passwordEncoder.matches(auth.getPassword(), u.getPassword())){
+            throw new ApiException("wrong password");
+        }
+
+        String token = jwtUtil.generateToken(u);
+
+        return new AuthResponse(token, u.getUsername(), u.getRole());
+    }
+
+    public AuthResponse expertSignUp(RegisterExpertRequest auth){
+        if (!isUnique(auth.getUsername(), auth.getEmail() )){
+            throw new ApiException("username or email already exists");
+        }
+        Expert e = new Expert();
+        e.setLinkedin_url(auth.getLinkedin_url());
+        e.setIsActive(false);
+        e.setCategory(auth.getCategory());
+        Users u = new Users();
+        u.setUsername(auth.getUsername());
+        u.setEmail(auth.getEmail());
+        u.setName(auth.getName());
+        u.setPassword(passwordEncoder.encode(auth.getPassword()));
+        u.setCreatedAt(LocalDateTime.now());
+        u.setRole("EXPERT");
+        u.setExpert(e);
+        usersRepository.save(u);
+        return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
+    }
+
+
+    public AuthResponse registerCustomer(RegisterCustomerRequest auth){
+        System.out.println("service:"+auth);
+        if (!isUnique(auth.getUsername(), auth.getEmail() )){
+            throw new ApiException("username or email already exists");
+        }
+
+        Users u = new Users();
+        u.setUsername(auth.getUsername());
+        u.setEmail(auth.getEmail());
+        u.setName(auth.getName());
+        u.setPassword(passwordEncoder.encode(auth.getPassword()));
+        u.setCreatedAt(LocalDateTime.now());
+        u.setRole("CUSTOMER");
+        u.setPhone(auth.getPhone_number());
+
+        Customer c = new Customer();
+        c.setUsers(u);
+        customerRepository.save(c);
+        return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
+    }
+
+
+
+    public boolean isUnique(String username, String email){
+        if (usersRepository.findUserByUsername(username).isPresent() || usersRepository.findUserByEmail(email).isPresent()){
+            return false;
+        }
+        return true;
     }
 }

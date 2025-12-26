@@ -5,9 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface MediaRepository extends JpaRepository<Media, Integer>
 {
     @Query("select m from Media m where m.id =:id")
-    Media findMediaById(Integer id);
+    Optional<Media> findMediaById(Integer id);
 }

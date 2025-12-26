@@ -24,10 +24,8 @@ public class ExpertService
     }
 
     public void update(Integer id, Users user){
-        Expert e = expertRepository.findExpertById(id);
-        if (e == null){
-            throw new ApiException("expert not found");
-        }
+        Expert e = expertRepository.findExpertById(id).orElseThrow(() -> new ApiException("expert not found"));
+
         Users u = e.getUsers();
         u.setUsername(user.getUsername());
         u.setPassword(user.getPassword());
@@ -39,10 +37,8 @@ public class ExpertService
     }
 
     public void delete(Integer id){
-        Expert e = expertRepository.findExpertById(id);
-        if (e == null){
-            throw new ApiException("expert not found");
-        }
+        Expert e = expertRepository.findExpertById(id).orElseThrow(() -> new ApiException("expert not found"));
+
         expertRepository.delete(e);
     }
 }

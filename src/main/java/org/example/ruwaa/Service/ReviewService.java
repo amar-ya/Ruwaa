@@ -29,33 +29,25 @@ public class ReviewService
     }
 
     public void add(Integer expert_id,Integer media_id,Review review){
-        Expert e = expertRepository.findExpertById(expert_id);
-        if (e == null){
-            throw new ApiException("expert not found");
-        }
-        Media m = mediaRepository.findMediaById(media_id);
-        if (m == null){
-            throw new ApiException("media not found");
-        }
+        Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
+
+        Media m = mediaRepository.findMediaById(media_id).orElseThrow(() -> new ApiException("media not found"));
+
         review.setMedia(m);
         review.setExpert(e);
         reviewRepository.save(review);
     }
 
     public void update(Integer id, Review review){
-        Review r = reviewRepository.findReviewById(id);
-        if (r == null){
-            throw new ApiException("review not found");
-        }
+        Review r = reviewRepository.findReviewById(id).orElseThrow(() -> new ApiException("review not found"));
+
         r.setContent(review.getContent());
         reviewRepository.save(r);
     }
 
     public void delete(Integer id){
-        Review r = reviewRepository.findReviewById(id);
-        if (r == null){
-            throw new ApiException("review not found");
-        }
+        Review r = reviewRepository.findReviewById(id).orElseThrow(() -> new ApiException("review not found"));
+
         reviewRepository.delete(r);
     }
 }
