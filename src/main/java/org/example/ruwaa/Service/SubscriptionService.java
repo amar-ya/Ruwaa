@@ -34,4 +34,12 @@ public class SubscriptionService
         sub.setSubscription_date(LocalDateTime.now().plusMonths(1));
         subscriptionRepository.save(sub);
     }
+
+    public Subscription getSubscription(String username){
+        Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if(c.getSubscription() == null){
+            throw new ApiException("you have never subscribed yet");
+        }
+        return c.getSubscription();
+    }
 }
