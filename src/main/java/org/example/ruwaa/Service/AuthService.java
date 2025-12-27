@@ -11,6 +11,7 @@ import org.example.ruwaa.Model.Customer;
 import org.example.ruwaa.Model.Expert;
 import org.example.ruwaa.Model.Users;
 import org.example.ruwaa.Repository.CustomerRepository;
+import org.example.ruwaa.Repository.ExpertRepository;
 import org.example.ruwaa.Repository.UsersRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,7 @@ public class AuthService  {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final CustomerRepository customerRepository;
+    private final ExpertRepository expertRepository;
 
     public AuthResponse login(AuthRequest auth){
         Users u = usersRepository.findUserByUsername(auth.getUsername()).orElseThrow(() -> new ApiException("wrong username"));
@@ -41,14 +43,11 @@ public class AuthService  {
         return new AuthResponse(token, u.getUsername(), u.getRole());
     }
 
-    public AuthResponse expertSignUp(MultipartFile cv, RegisterExpertRequest auth){
+    public AuthResponse expertSignUp(RegisterExpertRequest auth){
         if (!isUnique(auth.getUsername(), auth.getEmail() )){
             throw new ApiException("username or email already exists");
         }
-        Expert e = new Expert();
-        e.setLinkedin_url(auth.getLinkedin_url());
-        e.setIsActive(false);
-        e.setCategory(auth.getCategory());
+
         Users u = new Users();
         u.setUsername(auth.getUsername());
         u.setEmail(auth.getEmail());
@@ -56,8 +55,13 @@ public class AuthService  {
         u.setPassword(passwordEncoder.encode(auth.getPassword()));
         u.setCreatedAt(LocalDateTime.now());
         u.setRole("EXPERT");
-        u.setExpert(e);
-        usersRepository.save(u);
+        Expert e = new Expert();
+        e.setLinkedin_url(auth.getLinkedin_url());
+        e.setIsActive(false);
+        e.setCategory(auth.getCategory());
+        e.setUsers(u);
+        expertRepository.save(e);
+
         return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
     }
 

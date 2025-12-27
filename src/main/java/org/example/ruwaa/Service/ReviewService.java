@@ -19,6 +19,7 @@ public class ReviewService
     private final ReviewRepository reviewRepository;
     private final PostRepository mediaRepository;
     private final ExpertRepository expertRepository;
+    private final PostRepository postRepository;
 
     public List<Review> getAll(){
         List<Review> reviews = reviewRepository.findAll();
@@ -49,5 +50,36 @@ public class ReviewService
         Review r = reviewRepository.findReviewById(id).orElseThrow(() -> new ApiException("review not found"));
 
         reviewRepository.delete(r);
+    }
+
+    public List<Review> getFinishedReviews(){
+        List<Review> r = reviewRepository.findFinishedReviews();
+        if (r.isEmpty()){
+            throw new ApiException("there are no finished reviews");
+        }
+        return r;
+    }
+
+    public List<Review> getUnfinishedReviews(){
+        List<Review> r = reviewRepository.findUnfinishedReviews();
+        if (r.isEmpty()){
+            throw new ApiException("there are no unfinished reviews");
+        }
+        return r;
+    }
+
+    public void requestReview(Integer postId, Integer expertId) {
+        Post post = postRepository.findPostById(postId);
+        if (post == null) {
+            throw new ApiException("Post not found");
+        }
+
+        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+
+        Review review = new Review();
+        review.setStatus("Pending");
+        review.setExpert(expert);
+        review.setPost(post);
+        reviewRepository.save(review);
     }
 }
