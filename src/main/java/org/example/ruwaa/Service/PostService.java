@@ -26,6 +26,8 @@ public class PostService
     private final PostRepository postRepository;
     private final UsersRepository usersRepository;
     private final CustomerRepository customerRepository;
+    private final AiService aiService;
+
 
     public List<Post> getAll(){
         List<Post> postList = postRepository.findAll();
@@ -162,7 +164,8 @@ public class PostService
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
         //AI
-        return "";
+
+        return  aiService.askAI("Hello");
     }
 
     public void changeVisibilityToPublic(Integer postId){

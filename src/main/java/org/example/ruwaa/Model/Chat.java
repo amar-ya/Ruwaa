@@ -23,4 +23,8 @@ public class Chat
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "chat")
     private List<Message> messages;
+
+    @OneToOne
+    @MapsId
+    private Review reviewChat;
 }
