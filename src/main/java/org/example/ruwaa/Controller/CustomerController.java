@@ -1,11 +1,13 @@
 package org.example.ruwaa.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Api.ApiResponse;
+import org.example.ruwaa.Model.Customer;
 import org.example.ruwaa.Service.CustomerService;
+import org.example.ruwaa.Service.SubscriptionService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -13,10 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController
 {
     private final CustomerService customerService;
+    private final SubscriptionService subscriptionService;
 
     @GetMapping("/get")
     public ResponseEntity<?> getAll(){
         return ResponseEntity.status(200).body(customerService.findAll());
+    }
+
+    @PostMapping("/subscribe")
+    public ResponseEntity<?> subscribe(Authentication auth){
+        subscriptionService.subscribe(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("thank you for subscribing"));
     }
 
 

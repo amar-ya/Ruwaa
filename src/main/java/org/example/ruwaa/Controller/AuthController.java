@@ -7,10 +7,12 @@ import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.DTOs.AuthRequest;
 import org.example.ruwaa.DTOs.RegisterCustomerRequest;
 import org.example.ruwaa.DTOs.RegisterExpertRequest;
+import org.example.ruwaa.Model.Users;
 import org.example.ruwaa.Service.AiService;
 import org.example.ruwaa.Service.AuthService;
 import org.example.ruwaa.Service.SendMailService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,5 +36,15 @@ public class AuthController
     @PostMapping("/signup/customer")
     public ResponseEntity<?> signupCustomer (@RequestBody @Valid RegisterCustomerRequest auth){
         return ResponseEntity.status(200).body(authService.registerCustomer(auth));
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> admin (@RequestBody @Valid Users admin){
+        return ResponseEntity.status(200).body(authService.admin(admin));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication auth){
+        return ResponseEntity.status(200).body(authService.Me(auth.getName()));
     }
 }

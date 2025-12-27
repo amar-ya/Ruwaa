@@ -7,9 +7,11 @@ import org.example.ruwaa.DTOs.AuthResponse;
 import org.example.ruwaa.DTOs.RegisterCustomerRequest;
 import org.example.ruwaa.DTOs.RegisterExpertRequest;
 import org.example.ruwaa.Config.JWT.JwtUtil;
+import org.example.ruwaa.Model.Categories;
 import org.example.ruwaa.Model.Customer;
 import org.example.ruwaa.Model.Expert;
 import org.example.ruwaa.Model.Users;
+import org.example.ruwaa.Repository.CategoriesRepository;
 import org.example.ruwaa.Repository.CustomerRepository;
 import org.example.ruwaa.Repository.ExpertRepository;
 import org.example.ruwaa.Repository.UsersRepository;
@@ -30,6 +32,19 @@ public class AuthService  {
     private final JwtUtil jwtUtil;
     private final CustomerRepository customerRepository;
     private final ExpertRepository expertRepository;
+    private final CategoriesRepository categoriesRepository;
+
+
+    public AuthResponse admin(Users admin){
+        if (usersRepository.findUserByUsername(admin.getUsername()).isPresent()){
+            throw new ApiException("username is already taken");
+        }
+        admin.setRole("ADMIN");
+        admin.setCreatedAt(LocalDateTime.now());
+        usersRepository.save(admin);
+        String token = jwtUtil.generateToken(admin);
+        return new AuthResponse(token, admin.getUsername(), admin.getRole());
+    }
 
     public AuthResponse login(AuthRequest auth){
         Users u = usersRepository.findUserByUsername(auth.getUsername()).orElseThrow(() -> new ApiException("wrong username"));
@@ -47,7 +62,7 @@ public class AuthService  {
         if (!isUnique(auth.getUsername(), auth.getEmail() )){
             throw new ApiException("username or email already exists");
         }
-
+        Categories c = categoriesRepository.findCategoryByName(auth.getCategory()).orElseThrow(() -> new ApiException("no category have this name"));
         Users u = new Users();
         u.setUsername(auth.getUsername());
         u.setEmail(auth.getEmail());
@@ -58,12 +73,16 @@ public class AuthService  {
         Expert e = new Expert();
         e.setLinkedin_url(auth.getLinkedin_url());
         e.setIsActive(true);
-        e.setCategory(auth.getCategory());
+        e.setCategory(c);
         e.setConsult_price(auth.getAmount());
         e.setUsers(u);
         expertRepository.save(e);
 
         return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
+    }
+
+    public Users Me(String username){
+       return usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
     }
 
 
