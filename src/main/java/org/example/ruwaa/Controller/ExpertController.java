@@ -21,22 +21,16 @@ public class ExpertController
         return ResponseEntity.status(200).body(expertService.findMostActiveExpertByCategory(category));
     }
 
-    @PutMapping("/accept-review/{reviewId}")
-    public ResponseEntity<?> acceptReview (@PathVariable Integer reviewId, @RequestBody Review review) {
-        expertService.acceptReview(reviewId, review);
-        return ResponseEntity.status(200).body(new ApiResponse("review send successfully"));
+
+    @GetMapping("/get-expert-by-category/{category}")
+    public ResponseEntity<?> getExpertByCategory (@PathVariable String category) {
+        return ResponseEntity.status(200).body(expertService.getExpertByCategory(category));
     }
 
+    @PostMapping("/discount/{expertId}/{discountPercentage}")
+    public ResponseEntity<?> applyDiscount(@PathVariable Integer expertId, @PathVariable Double discountPercentage) {
 
-    @PostMapping("/reject-review/{reviewId}")
-    public ResponseEntity<?> rejectReview (@PathVariable Integer reviewId) {
-        expertService.rejectReview(reviewId);
-        return ResponseEntity.status(200).body(new ApiResponse("review rejected successfully"));
-    }
-
-    @PostMapping("/reject-all-reviews/{expertId}")
-    public ResponseEntity<?> rejectAllReviews (@PathVariable Integer expertId) {
-        expertService.rejectAll(expertId);
-        return ResponseEntity.status(200).body(new ApiResponse("All reviews rejected successfully"));
+        expertService.applyDiscount(expertId, discountPercentage);
+        return ResponseEntity.ok("Discount applied for 3 days");
     }
 }
