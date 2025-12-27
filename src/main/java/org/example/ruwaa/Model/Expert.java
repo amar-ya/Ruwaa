@@ -18,8 +18,6 @@ public class Expert
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String category;
-
     private String about_me;
 
     private String Linkedin_url;
@@ -44,4 +42,8 @@ public class Expert
     @OneToOne
     @JsonIgnore
     private Review review;
+
+    @ManyToOne
+    @JsonIgnore
+    private Categories category;
 }

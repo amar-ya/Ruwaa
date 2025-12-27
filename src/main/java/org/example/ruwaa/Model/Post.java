@@ -39,4 +39,8 @@ public class Post
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "post")
     private List<Attachments> attachments;
+
+    @ManyToOne
+    @JsonIgnore
+    private Categories category;
 }

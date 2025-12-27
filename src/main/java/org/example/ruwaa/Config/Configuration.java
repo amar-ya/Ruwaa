@@ -39,6 +39,13 @@ public class Configuration
                                 "/api/v1/post/create",
                                 "/api/v1/review/request-review/{postId}/{expertId}").hasAuthority("CUSTOMER")
 
+                        .requestMatchers("/api/v1/auth/me").hasAnyAuthority("CUSTOMER", "EXPERT")
+
+                        .requestMatchers("/api/v1/category/create",
+                                "/api/v1/category/get",
+                                "/api/v1/category/get/{name}",
+                                "/api/v1/category/update/{id}",
+                                "/api/v1/category/delete/{id}").hasAuthority("ADMIN")
 
                         .anyRequest().authenticated())
 
