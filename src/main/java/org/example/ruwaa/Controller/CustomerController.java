@@ -22,11 +22,7 @@ public class CustomerController
         return ResponseEntity.status(200).body(customerService.findAll());
     }
 
-    @PostMapping("/subscribe")
-    public ResponseEntity<?> subscribe(Authentication auth){
-        subscriptionService.subscribe(auth.getName());
-        return ResponseEntity.status(200).body(new ApiResponse("thank you for subscribing"));
-    }
+
 
 
 }
