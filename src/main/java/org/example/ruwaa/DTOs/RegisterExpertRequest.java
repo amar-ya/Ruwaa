@@ -30,4 +30,5 @@ public class RegisterExpertRequest
     @Pattern(regexp = "^(?i)(sport|art|science|business|media|law|trading)$", message = "invalid category choice")
     @NotEmpty(message = "category is required")
     private String category;
+    private Double amount;
 }

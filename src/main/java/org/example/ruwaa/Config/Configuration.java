@@ -29,12 +29,15 @@ public class Configuration
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup/customer",
                                 "/api/v1/auth/signup/expert",
-                                "/api/v1/auth/login").permitAll()
+                                "/api/v1/auth/login",
+                                "/api/v1/payment/thanks").permitAll()
 
                         .requestMatchers("/api/v1/review/finished",
                                 "/api/v1/review//unfinished").hasAuthority("EXPERT")
 
-                        .requestMatchers("/api/v1/expert//most-active/category/{category}").hasAuthority("CUSTOMER")
+                        .requestMatchers("/api/v1/expert//most-active/category/{category}",
+                                "/api/v1/post/create",
+                                "/api/v1/review/request-review/{postId}/{expertId}").hasAuthority("CUSTOMER")
 
 
                         .anyRequest().authenticated())

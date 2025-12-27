@@ -16,10 +16,10 @@ public class PaymentService {
 
     private static final String MOYASAR_API_KEY = "https://api.moyasar.com/v1/payments/";
 
-    public ResponseEntity<String> processPayment(Card card) {
+    public ResponseEntity<String> processPayment(Double amount,Card card) {
         String url = "https://api.moyasar.com/v1/payments";
 
-        String callBackUrl = "http://localhost:8080/api/v1/payment/callBack";
+        String callBackUrl = "http://localhost:8080/api/v1/payment/thanks";
 
         String requestBody = String.format(
                 "source[type]=card&source[name]=%s&source[number]=%s&source[cvc]=%s&" +
@@ -30,8 +30,8 @@ public class PaymentService {
                 card.getCvc(),
                 card.getMonth(),
                 card.getYear(),
-                (int) (card.getAmount() * 100),
-                card.getCurrency(),
+                (int) (amount * 100),
+                "SAR",
                 callBackUrl
         );
 
