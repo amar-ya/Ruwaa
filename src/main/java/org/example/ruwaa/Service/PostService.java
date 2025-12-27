@@ -2,21 +2,30 @@ package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
+import org.example.ruwaa.DTOs.LearningContentDTO;
+import org.example.ruwaa.DTOs.WorkPostDTO;
+import org.example.ruwaa.Model.Categories;
+import org.example.ruwaa.Model.Customer;
 import org.example.ruwaa.Model.Post;
 import org.example.ruwaa.Model.Users;
+import org.example.ruwaa.Repository.CategoriesRepository;
+import org.example.ruwaa.Repository.CustomerRepository;
 import org.example.ruwaa.Repository.PostRepository;
 import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostService
 {
+    private final CategoriesRepository categoriesRepository;
     private final PostRepository postRepository;
     private final UsersRepository usersRepository;
+    private final CustomerRepository customerRepository;
 
     public List<Post> getAll(){
         List<Post> postList = postRepository.findAll();
@@ -26,19 +35,52 @@ public class PostService
         return postList;
     }
 
-    public void addPost(String username, Post post){
-        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
 
-        post.setUsers(u);
+
+    public void addWorkPost(String username, WorkPostDTO dto){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        //is only customers or both?      if(!u.getRole().equals("CUSTOMER")) throw new ApiException("only customers can add this content type");
+        Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
+
+        String type = (dto.getIsPublic()) ? "public_work":"private_work";
+        HashSet<Users> permitPrivateWorkVisiablity;
+        if(dto.getIsPublic()) permitPrivateWorkVisiablity=null;
+        else {
+            permitPrivateWorkVisiablity= new HashSet<Users>();
+            permitPrivateWorkVisiablity.add(u); //adding the current user so they can see their own work :)
+        }
+
+        Post post = new Post(null,dto.getContent(),0,type,permitPrivateWorkVisiablity,u,null,dto.getAttachments(),category);
         postRepository.save(post);
     }
 
-    public void updatePost(Integer id, Post post){
-        Post m = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
 
-        m.setTitle(post.getTitle());
-        m.setContent(post.getContent());
-        postRepository.save(m);
+    public void addLearningContent(String username, LearningContentDTO dto){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if(!u.getRole().equals("EXPERT")) throw new ApiException("only expert can add this content type");
+
+        Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
+        String type = (dto.getIsFree()) ? "free_content":"subscription_content";
+
+        Post post = new Post(null,dto.getContent(),0,type,null,u,null,dto.getAttachments(),category);
+        postRepository.save(post);
+    }
+
+    public void updateWorkPost(Integer id, WorkPostDTO dto){
+        Post post = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
+
+        post.setContent(dto.getContent());
+        post.setAttachments(dto.getAttachments());
+
+        postRepository.save(post);
+    }
+    public void updateLearningCont(Integer id, LearningContentDTO dto){
+        Post post = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
+
+        post.setContent(dto.getContent());
+        post.setAttachments(dto.getAttachments());
+
+        postRepository.save(post);
     }
 
     public void deletePost(Integer id){
@@ -47,15 +89,68 @@ public class PostService
         postRepository.delete(m);
     }
 
-    //1) 24
-    public Post viewPost(Integer postId){
+
+    public Post viewWorkPost(Integer userId ,Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        Users user = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
+
+    if(p.getType().equals("private_work"))
+     if(!p.getPermitWorkVisiablity().contains(user)) throw new ApiException("This is private work");
 
     p.setViews(p.getViews()+1);
     postRepository.save(p);
     return p;
     }
-    //1)  1
+
+    public Post viewLearningPost(Integer userId ,Integer postId){
+        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        Users user = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
+
+        if(p.getType().equals("subscription_content")) {
+
+            if (user.getRole().equals("CUSTOMER")) {
+                Customer customer = customerRepository.findCustomerById(userId).orElseThrow();
+                if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDate.now()))
+                    throw new ApiException("this content needs subscription");
+
+            }
+            else if(!p.getUsers().equals(user)&&user.getRole().equals("EXPERT")) throw new ApiException("this content for customer");
+
+        } //sub
+
+        p.setViews(p.getViews()+1);
+        postRepository.save(p);
+        return p;
+    }
+
+
+
+
+    public List<Post> freeFeed(){
+        return postRepository.findPostByType("free_content");
+    }
+
+
+    public List<Post> subscribeFeed(Integer userId){
+        Users users = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
+        if(users.getRole().equals("EXPERT")) throw new ApiException("subscription content feed allowed for customers only");
+        if(!users.getRole().equals("ADMIN")){
+            Customer customer = customerRepository.findCustomerById(userId).orElseThrow();
+            if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDate.now()))
+                throw new ApiException("this feed needs subscription");
+        }
+        return postRepository.findPostByType("subscription_content");
+    }
+
+
+    public List<Post> workFeed(){
+        return postRepository.findPostByType("public_work");
+    }
+
+
+
+
+
     public List<Post> getMyPost(Integer userId){
         Users user = usersRepository.findUserById(userId).orElseThrow(() -> new ApiException("Account not found"));
         return postRepository.findPostByUsers_id(userId);
@@ -69,7 +164,7 @@ public class PostService
         //AI
         return "";
     }
-    //1)  6
+
     public void changeVisibilityToPublic(Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
@@ -80,7 +175,7 @@ public class PostService
 
     }
 
-    //1)  7
+
     public void changeVisibilityToPrivate(Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
@@ -90,4 +185,7 @@ public class PostService
         postRepository.save(p);
 
     }
+
+
+
 }

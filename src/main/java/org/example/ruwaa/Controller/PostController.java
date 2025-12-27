@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PostController
 {
-    private final PostService mediaService;
+  //  private final PostService mediaService;
 
     @PostMapping("/create")
     public ResponseEntity<?> postPost(@RequestBody @Valid Post post, Authentication auth){
         System.out.println("\n\ncontroller:"+auth.getName()+"\n\n");
-        mediaService.addPost(auth.getName(), post);
+       // mediaService.addPost(auth.getName(), post);
         return ResponseEntity.status(200).body(new ApiResponse("Added"));
     }
 }
