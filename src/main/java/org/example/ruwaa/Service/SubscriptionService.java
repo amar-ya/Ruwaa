@@ -35,6 +35,25 @@ public class SubscriptionService
         subscriptionRepository.save(sub);
     }
 
+    public void giftSubscribe(String username,String sender){
+        Customer gifer = customerRepository.findCustomerByUsername(sender).orElseThrow(() -> new ApiException("user not found"));
+        if(gifer.getUsers().getCards() == null){
+            throw new ApiException("you dont have cards");
+        }
+        Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        paymentService.processPayment(15.0,gifer.getUsers().getCards().get(0));
+        if(c.getSubscription() != null){
+            c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(1));
+            subscriptionRepository.save(c.getSubscription());
+            return;
+        }
+        Subscription sub = new Subscription();
+        sub.setCustomer(c);
+        sub.setSubscription_date(LocalDateTime.now());
+        sub.setSubscription_date(LocalDateTime.now().plusMonths(1));
+        subscriptionRepository.save(sub);
+    }
+
     public Subscription getSubscription(String username){
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         if(c.getSubscription() == null){

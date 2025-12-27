@@ -5,10 +5,7 @@ import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Service.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/subscription")
@@ -26,5 +23,11 @@ public class SubscriptionController
     @GetMapping("/my-subscription")
     public ResponseEntity<?> getMySubscription(Authentication auth){
         return ResponseEntity.status(200).body(subscriptionService.getSubscription(auth.getName()));
+    }
+
+    @PostMapping("/gift-subscription/to/{username}")
+    public ResponseEntity<?> giftSubscription(@PathVariable String username, Authentication auth){
+        subscriptionService.giftSubscribe(username, auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("gift subscription sent to: " + username + " successfully"));
     }
 }
