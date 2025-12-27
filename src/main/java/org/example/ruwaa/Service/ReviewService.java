@@ -9,6 +9,7 @@ import org.example.ruwaa.Repository.ReviewRepository;
 import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -71,15 +72,16 @@ public class ReviewService
 
     public void requestReview(Integer postId, Integer expertId) {
 
-        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
 
-        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+        Expert e = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
 
+        paymentService.processPayment(e.getConsult_price(),p.getUsers().getCards().get(0));
 
         Review review = new Review();
         review.setStatus("Pending");
-        review.setExpert(expert);
-        review.setPost(post);
+        review.setExpert(e);
+        review.setPost(p);
         reviewRepository.save(review);
     }
 }

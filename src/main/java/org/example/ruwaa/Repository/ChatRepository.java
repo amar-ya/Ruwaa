@@ -12,4 +12,6 @@ public interface ChatRepository extends JpaRepository<Chat, Integer>
 {
     @Query("select c from Chat c where c.id =:id")
     Optional<Chat> findChatById(Integer id);
+
+
 }

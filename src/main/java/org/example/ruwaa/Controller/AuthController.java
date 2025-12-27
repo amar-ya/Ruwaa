@@ -7,6 +7,7 @@ import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.DTOs.AuthRequest;
 import org.example.ruwaa.DTOs.RegisterCustomerRequest;
 import org.example.ruwaa.DTOs.RegisterExpertRequest;
+import org.example.ruwaa.DTOs.updateExpertRequest;
 import org.example.ruwaa.Model.Users;
 import org.example.ruwaa.Service.AiService;
 import org.example.ruwaa.Service.AuthService;
@@ -46,5 +47,17 @@ public class AuthController
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth){
         return ResponseEntity.status(200).body(authService.Me(auth.getName()));
+    }
+
+    @PutMapping("/update-expert")
+    public ResponseEntity<?> updateMyExpert (Authentication auth, @RequestBody @Valid updateExpertRequest update){
+        authService.updateExpertProfile(auth.getName(),update);
+        return ResponseEntity.status(200).body(new ApiResponse("profile updated successfully"));
+    }
+
+    @PutMapping("/update-customer")
+    public ResponseEntity<?> updateMyCustomer(Authentication auth, @RequestBody @Valid Users update){
+        authService.updateCustomerProfile(auth.getName(),update);
+        return ResponseEntity.status(200).body(new ApiResponse("profile updated successfully"));
     }
 }

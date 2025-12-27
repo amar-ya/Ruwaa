@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.Model.Customer;
 import org.example.ruwaa.Model.Subscription;
-import org.example.ruwaa.Model.Users;
 import org.example.ruwaa.Repository.CustomerRepository;
 import org.example.ruwaa.Repository.SubscriptionRepository;
-import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
