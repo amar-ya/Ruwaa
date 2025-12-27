@@ -22,6 +22,8 @@ public class Review
 
     private Integer feedback_rating;
 
+    private String status;
+
 
     @OneToOne(mappedBy = "review")
     @JsonIgnore

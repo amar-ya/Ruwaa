@@ -1,5 +1,6 @@
 package org.example.ruwaa.Repository;
 
+import org.example.ruwaa.Model.Expert;
 import org.example.ruwaa.Model.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +20,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>
 
     @Query("select r from Review r where r.content = null ")
     List<Review> findUnfinishedReviews();
+
+    List<Review> findAllByExpert(Expert expert);
 }

@@ -17,11 +17,15 @@ public class Card
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String card_number;
-    private String card_holder;
-    private String month_expiry;
-    private String year_expiry;
-    private String card_cvv;
+
+    private String name;
+    private String number;
+    private String cvc;
+    private String month;
+    private String year;
+    private Double amount;
+    private String currency;
+    private String callbackUrl;
 
     @ManyToOne
     @JsonIgnore

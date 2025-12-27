@@ -7,6 +7,7 @@ import org.example.ruwaa.Model.Post;
 import org.example.ruwaa.Model.Review;
 import org.example.ruwaa.Repository.ExpertRepository;
 import org.example.ruwaa.Repository.MediaRepository;
+import org.example.ruwaa.Repository.PostRepository;
 import org.example.ruwaa.Repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class ReviewService
     private final ReviewRepository reviewRepository;
     private final MediaRepository mediaRepository;
     private final ExpertRepository expertRepository;
+    private final PostRepository postRepository;
 
     public List<Review> getAll(){
         List<Review> reviews = reviewRepository.findAll();
@@ -65,5 +67,20 @@ public class ReviewService
             throw new ApiException("there are no unfinished reviews");
         }
         return r;
+    }
+
+    public void requestReview(Integer postId, Integer expertId) {
+        Post post = postRepository.findPostById(postId);
+        if (post == null) {
+            throw new ApiException("Post not found");
+        }
+
+        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+
+        Review review = new Review();
+        review.setStatus("Pending");
+        review.setExpert(expert);
+        review.setPost(post);
+        reviewRepository.save(review);
     }
 }
