@@ -23,9 +23,7 @@ public class Card
     private String cvc;
     private String month;
     private String year;
-    private Double amount;
-    private String currency;
-    private String callbackUrl;
+
 
     @ManyToOne
     @JsonIgnore

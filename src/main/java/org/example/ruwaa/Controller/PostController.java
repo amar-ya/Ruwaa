@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/media")
+@RequestMapping("/api/v1/post")
 @RequiredArgsConstructor
 public class PostController
 {
     private final PostService mediaService;
 
-    @PostMapping("/post")
-    public ResponseEntity<?> postPost(@RequestBody @Valid Post post, @AuthenticationPrincipal Authentication auth){
+    @PostMapping("/create")
+    public ResponseEntity<?> postPost(@RequestBody @Valid Post post, Authentication auth){
+        System.out.println("\n\ncontroller:"+auth.getName()+"\n\n");
         mediaService.addPost(auth.getName(), post);
         return ResponseEntity.status(200).body(new ApiResponse("Added"));
     }

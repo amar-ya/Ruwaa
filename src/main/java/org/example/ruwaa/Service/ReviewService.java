@@ -2,12 +2,11 @@ package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
-import org.example.ruwaa.Model.Expert;
-import org.example.ruwaa.Model.Post;
-import org.example.ruwaa.Model.Review;
+import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.ExpertRepository;
 import org.example.ruwaa.Repository.PostRepository;
 import org.example.ruwaa.Repository.ReviewRepository;
+import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +19,8 @@ public class ReviewService
     private final PostRepository mediaRepository;
     private final ExpertRepository expertRepository;
     private final PostRepository postRepository;
+    private final PaymentService paymentService;
+    private final UsersRepository usersRepository;
 
     public List<Review> getAll(){
         List<Review> reviews = reviewRepository.findAll();
@@ -32,7 +33,7 @@ public class ReviewService
     public void add(Integer expert_id,Integer media_id,Review review){
         Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
 
-        Post m = mediaRepository.findMediaById(media_id).orElseThrow(() -> new ApiException("media not found"));
+        Post m = mediaRepository.findPostById(media_id).orElseThrow(() -> new ApiException("media not found"));
 
         review.setPost(m);
         review.setExpert(e);
@@ -69,12 +70,11 @@ public class ReviewService
     }
 
     public void requestReview(Integer postId, Integer expertId) {
-        Post post = postRepository.findPostById(postId);
-        if (post == null) {
-            throw new ApiException("Post not found");
-        }
+
+        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
 
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+
 
         Review review = new Review();
         review.setStatus("Pending");

@@ -57,8 +57,9 @@ public class AuthService  {
         u.setRole("EXPERT");
         Expert e = new Expert();
         e.setLinkedin_url(auth.getLinkedin_url());
-        e.setIsActive(false);
+        e.setIsActive(true);
         e.setCategory(auth.getCategory());
+        e.setConsult_price(auth.getAmount());
         e.setUsers(u);
         expertRepository.save(e);
 

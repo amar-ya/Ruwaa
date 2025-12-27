@@ -2,8 +2,10 @@ package org.example.ruwaa.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
+import org.example.ruwaa.Service.PaymentService;
 import org.example.ruwaa.Service.ReviewService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController
 {
     private final ReviewService reviewService;
+
 
     @GetMapping("/finished")
     public ResponseEntity<?> getFinishedReviews(){
@@ -24,8 +27,11 @@ public class ReviewController
     }
 
     @PutMapping("/request-review/{postId}/{expertId}")
-    public ResponseEntity<?> requestReview (@PathVariable Integer postId, @PathVariable Integer expertId) {
+    public ResponseEntity<?> requestReview (@PathVariable Integer postId, @PathVariable Integer expertId, Authentication auth) {
+
         reviewService.requestReview(postId, expertId);
         return ResponseEntity.status(200).body(new ApiResponse("Request send successfully"));
     }
+
+
 }
