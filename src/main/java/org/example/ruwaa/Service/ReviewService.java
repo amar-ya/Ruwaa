@@ -6,7 +6,6 @@ import org.example.ruwaa.Model.Expert;
 import org.example.ruwaa.Model.Post;
 import org.example.ruwaa.Model.Review;
 import org.example.ruwaa.Repository.ExpertRepository;
-import org.example.ruwaa.Repository.MediaRepository;
 import org.example.ruwaa.Repository.PostRepository;
 import org.example.ruwaa.Repository.ReviewRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import java.util.List;
 public class ReviewService
 {
     private final ReviewRepository reviewRepository;
-    private final MediaRepository mediaRepository;
+    private final PostRepository mediaRepository;
     private final ExpertRepository expertRepository;
     private final PostRepository postRepository;
 

@@ -2,6 +2,7 @@ package org.example.ruwaa.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,15 +30,16 @@ public class Users implements UserDetails
     private String about_me;
 
     private String name;
-
+    @Column(columnDefinition = "varchar(20) unique not null")
     private String username;
 
     private String password;
-
+    @Column(columnDefinition = "varchar(50) unique not null")
     private String email;
 
     private String phone;
-
+    @Pattern(regexp = "^(?i)(CUSTOMER|EXPERT|ADMIN)$", message = "role invalid")
+    @Column(columnDefinition = "varchar(10) not null")
     private String role;
 
     private LocalDateTime createdAt;

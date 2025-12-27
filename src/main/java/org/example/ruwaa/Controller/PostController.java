@@ -2,8 +2,11 @@ package org.example.ruwaa.Controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Model.Post;
-import org.example.ruwaa.Service.MediaService;
+import org.example.ruwaa.Service.PostService;
+import org.example.ruwaa.Service.SendMailService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/media")
 @RequiredArgsConstructor
-public class MediaController
+public class PostController
 {
-    private final MediaService mediaService;
+    private final PostService mediaService;
 
     @PostMapping("/post")
-    public void postMedia(@RequestBody @Valid Post post, @AuthenticationPrincipal Authentication auth){
-        mediaService.addMedia(auth.getName(), post);
-
+    public ResponseEntity<?> postPost(@RequestBody @Valid Post post, @AuthenticationPrincipal Authentication auth){
+        mediaService.addPost(auth.getName(), post);
+        return ResponseEntity.status(200).body(new ApiResponse("Added"));
     }
 }
