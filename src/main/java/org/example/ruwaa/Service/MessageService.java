@@ -29,8 +29,8 @@ public class MessageService
         return messages;
     }
 
-    public void send(Integer user_id,Integer chat_id, Message m){
-        Users u = usersRepository.findUserById(user_id).orElseThrow(() -> new ApiException("user not found"));
+    public void send(String username,Integer chat_id, Message m){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
 
         Chat c = chatRepository.findChatById(chat_id).orElseThrow(() -> new ApiException("chat not found"));
         if (!c.getIsOpen()){
@@ -53,5 +53,9 @@ public class MessageService
         Message m = messageRepository.findMessageById(id).orElseThrow(() -> new ApiException("message not found"));
 
         messageRepository.delete(m);
+    }
+
+    public List<Message> displayChat(Integer chat_id){
+        return messageRepository.findAllMessagesByChatId(chat_id).orElseThrow(() -> new ApiException("chat not found"));
     }
 }

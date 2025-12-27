@@ -1,6 +1,7 @@
 package org.example.ruwaa.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Model.Chat;
 import org.example.ruwaa.Service.ChatService;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,12 @@ public class ChatController
 
         chatService.save(chat);
         return ResponseEntity.status(200).body(chat);
+    }
+
+    @PutMapping("/close/{id}")
+    public ResponseEntity<?> close(@PathVariable Integer id, Authentication auth){
+        chatService.closeChat(id,  auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("chat closed successfully"));
     }
 
 }
