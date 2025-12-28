@@ -21,6 +21,7 @@ public class Chat
 
     private Boolean isOpen;
 
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "chat")
     private List<Message> messages;
 

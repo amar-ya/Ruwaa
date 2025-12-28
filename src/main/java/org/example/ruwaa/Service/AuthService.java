@@ -2,10 +2,7 @@ package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
-import org.example.ruwaa.DTOs.AuthRequest;
-import org.example.ruwaa.DTOs.AuthResponse;
-import org.example.ruwaa.DTOs.RegisterCustomerRequest;
-import org.example.ruwaa.DTOs.RegisterExpertRequest;
+import org.example.ruwaa.DTOs.*;
 import org.example.ruwaa.Config.JWT.JwtUtil;
 import org.example.ruwaa.Model.Categories;
 import org.example.ruwaa.Model.Customer;
@@ -18,8 +15,6 @@ import org.example.ruwaa.Repository.UsersRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -83,6 +78,33 @@ public class AuthService  {
 
     public Users Me(String username){
        return usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+    }
+
+    public void updateExpertProfile(String username, updateExpertRequest request){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if (!u.getRole().equals("EXPERT")){
+            throw new ApiException("you are not an expert");
+        }
+        u.setAbout_me(request.getAbout_me());
+        u.setUsername(request.getUsername());
+        u.setPhone(request.getPhone_number());
+        u.setEmail(request.getEmail());
+        usersRepository.save(u);
+        Expert e = u.getExpert();
+        e.setLinkedin_url(request.getLinkedin_url());
+        expertRepository.save(e);
+    }
+
+    public void updateCustomerProfile(String username, Users user){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if (!u.getRole().equals("CUSTOMER")){
+            throw new ApiException("you are not a customer");
+        }
+        u.setEmail(user.getEmail());
+        u.setUsername(user.getUsername());
+        u.setPhone(user.getPhone());
+        u.setAbout_me(user.getAbout_me());
+        usersRepository.save(u);
     }
 
 
