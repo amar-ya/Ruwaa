@@ -16,5 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>
 
     List<Post> findPostByUsers_id(Integer user_id);
 
+    @Query("select p from Post p where p.type = :type")
     List<Post> findPostByType(String type);
 }

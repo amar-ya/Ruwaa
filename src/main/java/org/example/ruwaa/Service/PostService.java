@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.DTOs.LearningContentDTO;
 import org.example.ruwaa.DTOs.WorkPostDTO;
-import org.example.ruwaa.Model.Categories;
-import org.example.ruwaa.Model.Customer;
-import org.example.ruwaa.Model.Post;
-import org.example.ruwaa.Model.Users;
+import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.CategoriesRepository;
 import org.example.ruwaa.Repository.CustomerRepository;
 import org.example.ruwaa.Repository.PostRepository;
 import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -60,14 +59,19 @@ public class PostService
     }
 
 
-    public void addLearningContent(String username, LearningContentDTO dto){
+    public void addLearningContent(String username,MultipartFile image,LearningContentDTO dto) throws IOException {
         Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         if(!u.getRole().equals("EXPERT")) throw new ApiException("only expert can add this content type");
 
         Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
         String type = (dto.getIsFree()) ? "free_content":"subscription_content";
 
+        Attachments a = new Attachments();
+        a.setData(image.getBytes());
+        a.setName(image.getOriginalFilename());
+        a.setType(image.getContentType());
         Post post = new Post(null,dto.getContent(),0,type,null,u,null,dto.getAttachments(),category);
+        post.getAttachments().add(a);
         postRepository.save(post);
     }
 
@@ -79,7 +83,7 @@ public class PostService
 
         postRepository.save(post);
     }
-    public void updateLearningCont(Integer id, LearningContentDTO dto){
+    public void updateLearningCont(Integer id, LearningContentDTO dto)  {
         Post post = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
 
         post.setContent(dto.getContent());
@@ -98,10 +102,11 @@ public class PostService
     public Post viewWorkPost(Integer userId ,Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         Users user = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
-
+    if (p.getType().contains("content")){
+        throw new ApiException("post was not found");
+    }
     if(p.getType().equals("private_work"))
      if(!p.getPermitWorkVisiablity().contains(user)) throw new ApiException("This is private work");
-
     p.setViews(p.getViews()+1);
     postRepository.save(p);
     return p;
@@ -110,7 +115,9 @@ public class PostService
     public Post viewLearningPost(String username ,Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
-
+        if (p.getType().contains("work")){
+            throw new ApiException("post was not found");
+        }
         if(p.getType().equals("subscription_content")) {
 
             if (user.getRole().equals("CUSTOMER")) {
@@ -129,18 +136,16 @@ public class PostService
     }
 
 
-
-
     public List<Post> freeFeed(){
         return postRepository.findPostByType("free_content");
     }
 
 
-    public List<Post> subscribeFeed(Integer userId){
-        Users users = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
+    public List<Post> subscribeFeed(String username){
+        Users users = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         if(users.getRole().equals("EXPERT")) throw new ApiException("subscription content feed allowed for customers only");
         if(!users.getRole().equals("ADMIN")){
-            Customer customer = customerRepository.findCustomerById(userId).orElseThrow();
+            Customer customer = users.getCustomer();
             if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDateTime.now()))
                 throw new ApiException("this feed needs subscription");
         }
