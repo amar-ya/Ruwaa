@@ -30,7 +30,9 @@ public class Configuration
                         .requestMatchers("/api/v1/auth/signup/customer",
                                 "/api/v1/auth/signup/expert",
                                 "/api/v1/auth/login",
-                                "/api/v1/payment/thanks").permitAll()
+                                "/api/v1/payment/thanks",
+                                "/api/v1/category/get",
+                                "/api/v1/category/get/{name}").permitAll()
 
                         .requestMatchers("/api/v1/review/finished",
                                 "/api/v1/review//unfinished").hasAuthority("EXPERT")
@@ -39,13 +41,24 @@ public class Configuration
                                 "/api/v1/post/create",
                                 "/api/v1/review/request-review/{postId}/{expertId}").hasAuthority("CUSTOMER")
 
-                        .requestMatchers("/api/v1/auth/me").hasAnyAuthority("CUSTOMER", "EXPERT")
+                        .requestMatchers("/api/v1/auth/me",
+                                "/api/v1/auth/me",
+                                "/api/v1/auth/update-customer",
+                                "/api/v1/auth/update-expert",
+                                "api/v1/chat/close/{id}",
+                                "/api/v1/expert/most-active/category/{category}").hasAnyAuthority("CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/category/create",
-                                "/api/v1/category/get",
-                                "/api/v1/category/get/{name}",
                                 "/api/v1/category/update/{id}",
-                                "/api/v1/category/delete/{id}").hasAuthority("ADMIN")
+                                "/api/v1/category/delete/{id}",
+                                "api/v1/chat/get",
+                                "api/v1/customer/get").hasAuthority("ADMIN")
+
+                        .requestMatchers("api/v1/chat/create",
+                                "/api/v1/message/display-chat/{chat_id}",
+                                "/api/v1/message/send/{chat_id}").hasAnyAuthority("CUSTOMER","EXPERT","ADMIN")
+
+
 
                         .anyRequest().authenticated())
 
