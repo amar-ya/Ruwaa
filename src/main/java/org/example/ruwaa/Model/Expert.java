@@ -30,9 +30,11 @@ public class Expert
 
     private byte[] data;
 
-    private Double actual_rating;
+    private Double count_rating;
 
     private Double total_rating;
+
+
 
 
 

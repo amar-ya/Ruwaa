@@ -102,8 +102,8 @@ public class ReviewService
         Expert expert = review.getExpert();
 
         //I need variable names
-//    expert.setSUM(expert.getSUM()+rate);
-//    expert.setCounter(expert.getCounter()+1);
+    expert.setTotal_rating(expert.getTotal_rating()+rate);
+    expert.setCount_rating(expert.getCount_rating()+1);
 //    expert.setReviewRate(expert.getSUM()/expert.getCounter());
 
         expertRepository.save(expert);
@@ -145,8 +145,11 @@ public class ReviewService
         chatRepository.save(chat);
         reviewRepository.save(review);
 
-     //***   expert1.setBalance() !!!
+        Double credit = expert.getExpert().getConsult_price()-0; //change 0
 
+     //***   expert1.setBalance() !!!
+        expert.setBalance(expert.getBalance()+credit);
+        expertRepository.save(expert.getExpert());
     }
 
 

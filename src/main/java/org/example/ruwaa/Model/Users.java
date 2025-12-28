@@ -3,6 +3,7 @@ package org.example.ruwaa.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,12 +39,18 @@ public class Users implements UserDetails
     @Column(columnDefinition = "varchar(50) unique not null")
     private String email;
 
+    @Column(columnDefinition = "varchar(10) unique not null")
     private String phone;
     @Pattern(regexp = "^(?i)(CUSTOMER|EXPERT|ADMIN)$", message = "role invalid")
     @Column(columnDefinition = "varchar(10) not null")
     private String role;
 
     private LocalDateTime createdAt;
+
+    @Positive
+    private Double balance;
+
+
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
     @PrimaryKeyJoinColumn
