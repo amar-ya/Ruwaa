@@ -93,6 +93,7 @@ public class ReviewController
     @GetMapping("/get-completed-reviews/{postId}")
     public ResponseEntity<?> getCompletedReviewsByPost (@PathVariable Integer postId) {
         return ResponseEntity.status(200).body(reviewService.getCompletedReviewsByPost(postId));
+    }
     @GetMapping("/assist/{postId}")
     public ResponseEntity<?> reviewAssistance(@PathVariable Integer postId) {
         return ResponseEntity.status(200).body(new ApiResponse(reviewService.reviewAssistance(postId)));
