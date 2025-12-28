@@ -2,6 +2,7 @@ package org.example.ruwaa.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +23,13 @@ public class Review
 
     private Integer feedback_rating;
 
+    @Pattern(regexp="^(Pending|Completed|Rejected|Accepted)$")
     private String status;
 
     private Boolean hasRated;
     private Integer rate;
 
-    @OneToOne(mappedBy = "review")
+    @ManyToOne
     @JsonIgnore
     private Expert expert;
 

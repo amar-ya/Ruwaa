@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,9 +45,9 @@ public class Expert
     @JsonIgnore
     private Users users;
 
-    @OneToOne
+    @OneToMany(mappedBy = "expert")
     @JsonIgnore
-    private Review review;
+    private Set<Review> reviews;
 
     @ManyToOne
     @JsonIgnore

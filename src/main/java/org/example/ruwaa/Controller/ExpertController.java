@@ -33,6 +33,16 @@ public class ExpertController
     public ResponseEntity<?> applyDiscount(@PathVariable Integer expertId, @PathVariable Double discountPercentage, @PathVariable LocalDate date) {
 
         expertService.applyDiscount(expertId, discountPercentage,date);
-        return ResponseEntity.ok("Discount applied");
+        return ResponseEntity.status(200).body(new ApiResponse("Discount applied successfully"));
+    }
+
+    @GetMapping("/calculate-average/{someExpert}")
+    public ResponseEntity<?> getExpertRateAverage(Integer someExpert){
+    return ResponseEntity.status(200).body(expertService.getExpertRateAverage(someExpert));
+    }
+
+    @PutMapping("/subscription-earning/{earningMonth}/{views}")
+    public ResponseEntity<?> subscriptionEarning(@PathVariable Double earningMonth, @PathVariable Integer views){
+    return ResponseEntity.status(200).body(new ApiResponse(expertService.subscriptionEarning(earningMonth,views)));
     }
 }

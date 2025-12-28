@@ -7,7 +7,6 @@ import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -135,6 +134,8 @@ public class ReviewService
         review.setHasRated(false);
         review.setPost(p);
         review.setExpert(e);
+        e.getReviews().add(review);
+        expertRepository.save(e);
         reviewRepository.save(review);
         //notify expert         **update link later for better UX
         String body = "a new review request worth "+e.getConsult_price()+"SR,\n\n" + //**** كم نخلي نسبة الربح حقتنا عشان نطرح
@@ -143,46 +144,59 @@ public class ReviewService
         sendMailService.sendMessage(e.getUsers().getEmail(),"New Review Request From "+p.getUsers().getName(),body);
     }
 
-    public void submitReview(Integer reviewId,Integer userId ,ReviewDTO reviewDTO){
+    public void submitReview(Integer reviewId,String username ,ReviewDTO reviewDTO){
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()-> new ApiException("review not found"));
-        Users expert = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("expert not found"));
+        Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         if(!expert.getRole().equals("EXPERT")) throw new ApiException("unAuthorized writing review");
-        Expert expert1 = expertRepository.findExpertById(userId).orElseThrow();
-        if(!review.getExpert().equals(expert1)) throw new ApiException("unAuthorized, belongs to another expert");
+        Expert expert1 = expertRepository.findExpertByUsername(username).orElseThrow(() -> new ApiException("expert not found"));
 
-        review.setContent(review.getContent());
-        review.setStatus("FINISHED"); //***********CHECK REGEX
+        //
+        // if(!review.getStatus().equals("Accepted")) throw new ApiException("you need to accept review first");
 
-        Chat chat = new Chat(null,true,new ArrayList<>(),review);
-        review.setChat(chat);
-        chatRepository.save(chat);
+        review.setContent(reviewDTO.getContent());
+        review.setStatus("Completed"); //***********CHECK REGEX
+
+
+//        Chat chat = new Chat(null,true,new ArrayList<>(),review);
+//        review.setChat(chat);
+//        chatRepository.save(chat);
         reviewRepository.save(review);
 
-        Double credit = expert.getExpert().getConsult_price(); //********* هنا نحط النسبة
+        Double credit = expert.getExpert().getConsult_price();
 
         expert.setBalance(expert.getBalance()+credit);
+
+        expert.getExpert().setReview_count(expert1.getReview_count()+1);
         expertRepository.save(expert.getExpert());
+        String message = "your review request to: "+expert.getName()+"\n saying: "+reviewDTO.getContent();
+        sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review submitted",message);
     }
 
 
-    public void acceptReview (Integer reviewId, Review review) {
-        Review review1 = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
-
-        review1.setStatus("Accepted");
-        review1.setContent(review.getContent());
-        reviewRepository.save(review1);
-    }
-
-
-    public void rejectReview (Integer reviewId) {
+    public void acceptReview ( String username, Integer reviewId) {
+        Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
 
-        review.setStatus("Rejected");
+        review.setStatus("Accepted");
+        reviewRepository.save(review);
     }
 
 
-    public void rejectAll (Integer expertId) {
-        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+    public void rejectReview (String username, Integer reviewId,String reason) {
+        Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
+        System.out.println(review.getExpert());
+
+        String message = "the request to review you post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName()+" for the following reason: "+reason;
+        sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
+        review.setStatus("Rejected");
+        reviewRepository.save(review);
+    }
+
+
+    public void rejectAll (String username) {
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
+        Expert expert = expertRepository.findExpertById(user.getId()).orElseThrow(()-> new ApiException("expert not found"));
 
         List<Review> reviews = reviewRepository.findAllByExpert(expert);
 
@@ -192,6 +206,19 @@ public class ReviewService
             }
         }
         reviewRepository.saveAll(reviews);
+    }
+
+
+    public List<Review> getPendingReviews (String username) {
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
+        Expert expert = expertRepository.findExpertById(user.getId()).orElseThrow(()-> new ApiException("expert not found"));
+
+        List<Review> reviews = reviewRepository.findPendingReviews(expert);
+
+        if (reviews.isEmpty()) {
+            throw new ApiException("No pending reviews found");
+        }
+        return reviews;
     }
 
 
@@ -206,36 +233,34 @@ public class ReviewService
     }
 
 
-    public List<Review> getSendRequests (Integer customerId) {
-        Customer customer = customerRepository.findCustomerById(customerId).orElseThrow(() -> new ApiException("Customer not found"));
+    public List<Review> getSentRequests(String username) {
+        Customer customer = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("Customer not found"));
 
         List<Review> customerRequests = new ArrayList<>();
         List<Review> all = reviewRepository.findAll();
 
         for (Review review : all) {
-            if (review.getPost().getUsers().getId().equals(customerId)){
+            if (review.getPost().getUsers().getId().equals(customer.getId())){
                 customerRequests.add(review);
             }
         }
         return customerRequests;
     }
 
-    public List<Review> getCompletedReviewsByPost(Integer postId) {
-        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("Post not found"));
-
-        List<Review> reviews = reviewRepository.findAllByPost(post);
-        List<Review> complete = new ArrayList<>();
-
-        for (Review review : reviews) {
-            if (review.getStatus().equals("Completed")) {
-                complete.add(review);
-            }
+    public List<Review> getCompletedReviewsByPost(Integer postId, String username) {
+        Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("Customer not found"));
+        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("Post not found"));
+        if (p.getUsers() != c.getUsers()){
+            throw new ApiException("this post doesnt belong to you");
         }
-        if (reviews.isEmpty()) {
+        List<Review>  completed = reviewRepository.findCompletedReviewsOfPost(postId);
+
+        if (completed.isEmpty()) {
             throw new ApiException("No reviews found");
         }
-        return complete;
+        return completed;
     }
+
     public String makeReviewTemplate(Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");

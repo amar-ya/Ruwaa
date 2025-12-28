@@ -45,4 +45,16 @@ public class SubscriptionController
         subscriptionService.giftSubscribe(username, auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("gift subscription sent to: " + username + " successfully"));
     }
+
+    @PostMapping("/gift-3subscription/to/{username}")
+    public ResponseEntity<?> giftThreeSubscription(@PathVariable String username, Authentication auth){
+        subscriptionService.giftThreeSubscribe(username, auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("gift subscription sent to: " + username + " successfully"));
+    }
+
+    @PostMapping("/gift-6subscription/to/{username}")
+    public ResponseEntity<?> giftSixSubscription(@PathVariable String username, Authentication auth){
+        subscriptionService.giftSixSubscribe(username, auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("gift subscription sent to: " + username + " successfully"));
+    }
 }

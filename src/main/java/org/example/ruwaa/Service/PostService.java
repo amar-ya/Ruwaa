@@ -53,8 +53,15 @@ public class PostService
             permitPrivateWorkVisiablity.add(u); //adding the current user so they can see their own work :)
         }
 
-        Post post = new Post(null,dto.getContent(),0,type,permitPrivateWorkVisiablity,u,null,dto.getAttachments(),category);
-        postRepository.save(post);
+        Post p = new Post();
+        p.setPublishAt(LocalDateTime.now());
+        p.setCategory(category);
+        p.setUsers(u);
+        p.setContent(dto.getContent());
+        p.setType(type);
+        p.setViews(0);
+        p.setPermitWorkVisiablity(permitPrivateWorkVisiablity);
+        postRepository.save(p);
 
     }
 
@@ -70,7 +77,7 @@ public class PostService
         a.setData(image.getBytes());
         a.setName(image.getOriginalFilename());
         a.setType(image.getContentType());
-        Post post = new Post(null,dto.getContent(),0,type,null,u,null,dto.getAttachments(),category);
+        Post post = new Post(null,dto.getContent(),0,type,LocalDateTime.now(),null,u,null,dto.getAttachments(),category);
         post.getAttachments().add(a);
         postRepository.save(post);
     }
@@ -99,9 +106,9 @@ public class PostService
     }
 
 
-    public Post viewWorkPost(Integer userId ,Integer postId){
+    public Post viewWorkPost(String username ,Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
-        Users user = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
     if (p.getType().contains("content")){
         throw new ApiException("post was not found");
     }

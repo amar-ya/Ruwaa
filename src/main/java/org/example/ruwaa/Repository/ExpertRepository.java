@@ -20,4 +20,7 @@ public interface ExpertRepository extends JpaRepository<Expert, Integer>
 
     @Query("select e from Expert e where e.category = ?1")
     List<Expert> findExpertByCategory (String category);
+
+    @Query("select e from Expert e join e.users u where u.username = :username")
+    Optional<Expert> findExpertByUsername(String username);
 }

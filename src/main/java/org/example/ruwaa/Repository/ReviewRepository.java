@@ -6,6 +6,7 @@ import org.example.ruwaa.Model.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +17,20 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>
     @Query("select r from Review r where r.id =:id")
     Optional<Review> findReviewById(Integer id);
 
-    @Query("select r from Review r where r.content != null ")
-    List<Review> findFinishedReviews();
-
-    @Query("select r from Review r where r.content = null ")
+    @Query("select r from Review r where r.status = 'Accepted' ")
     List<Review> findUnfinishedReviews();
+
+    @Query("select r from Review r where r.status = 'Completed'  ")
+    List<Review> findFinishedReviews();
 
     List<Review> findAllByExpert(Expert expert);
 
     List<Review> findAllByPost(Post post);
+
+    @Query("select r from Review r where r.status = 'Pending' and r.expert = ?1")
+    List<Review> findPendingReviews (Expert expert);
+
+    @Query("select r from Review r join r.post p where p.id = :id and r.status = 'Completed' ")
+    List<Review> findCompletedReviewsOfPost(Integer id);
 
 }
