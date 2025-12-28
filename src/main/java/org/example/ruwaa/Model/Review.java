@@ -24,6 +24,8 @@ public class Review
 
     private String status;
 
+    private Boolean hasRated;
+    private Integer rate;
 
     @OneToOne(mappedBy = "review")
     @JsonIgnore
@@ -33,6 +35,10 @@ public class Review
     @JsonIgnore
     private Post post;
 
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "reviewChat")
+    @PrimaryKeyJoinColumn
+    @JsonIgnore
+    private Chat chat;
 
 
 }
