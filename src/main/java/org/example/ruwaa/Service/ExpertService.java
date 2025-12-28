@@ -84,6 +84,12 @@ public class ExpertService
 
     }
 
+    public Double getExpertRateAverage(Integer expertId){
+        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+
+        return expert.getTotal_rating()/expert.getCount_rating();
+    }
+
 }
 
 
