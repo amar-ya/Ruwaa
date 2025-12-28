@@ -19,7 +19,7 @@ public class Subscription
 {
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private LocalDateTime subscription_date;
 

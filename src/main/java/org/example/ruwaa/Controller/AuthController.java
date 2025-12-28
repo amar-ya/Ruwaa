@@ -60,4 +60,8 @@ public class AuthController
         authService.updateCustomerProfile(auth.getName(),update);
         return ResponseEntity.status(200).body(new ApiResponse("profile updated successfully"));
     }
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.status(200).body(authService.getAllUsers());
+    }
 }

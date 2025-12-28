@@ -40,8 +40,9 @@ public class PostService
 
 
     public void addWorkPost(String username, WorkPostDTO dto){
+
         Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
-        //is only customers or both?      if(!u.getRole().equals("CUSTOMER")) throw new ApiException("only customers can add this content type");
+        if(!u.getRole().equals("CUSTOMER")) throw new ApiException("only customers can add this content type");
         Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
 
         String type = (dto.getIsPublic()) ? "public_work":"private_work";
@@ -54,6 +55,7 @@ public class PostService
 
         Post post = new Post(null,dto.getContent(),0,type,permitPrivateWorkVisiablity,u,null,dto.getAttachments(),category);
         postRepository.save(post);
+
     }
 
 
@@ -163,9 +165,22 @@ public class PostService
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
-        //AI
 
-        return  aiService.askAI("Hello");
+        String dtoString = " بناءًا على العمل المعطى (قد يكون كود برمجي، عمل فني، الخ) ابيك تقييم هذا العمل بمعايير قياسية فعلية، وتعطيني الاجابة مباشرة وبدون ايموجي التقييم من 5، الأسلوب والهوية الفنية (Style & Originality)" +
+                "الأسلوب والهوية الفنية (Style & Originality)" +
+                " ما حققته:" +
+                "أسلوب شاعري واضح." +
+                "حس تعبيري أقرب للفن المعاصر." +
+                "العمل يبدو “صوتًا واحدًا” لا تجميع تقنيات." +
+                "ما خالفته / يمكن تحسينه:" +
+                "الأسلوب قريب من مدارس معروفة؛ يحتاج توقيعًا شخصيًا أقوى." +
+                "التقييم:  (4/5)"
+                ;
+
+
+             dtoString += aiService.dtoPost(p);
+
+        return  aiService.askAI(dtoString);
     }
 
     public void changeVisibilityToPublic(Integer postId){

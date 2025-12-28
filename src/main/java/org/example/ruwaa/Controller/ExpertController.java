@@ -8,6 +8,8 @@ import org.example.ruwaa.Service.ExpertService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/v1/expert")
 @RequiredArgsConstructor
@@ -27,10 +29,10 @@ public class ExpertController
         return ResponseEntity.status(200).body(expertService.getExpertByCategory(category));
     }
 
-    @PostMapping("/discount/{expertId}/{discountPercentage}")
-    public ResponseEntity<?> applyDiscount(@PathVariable Integer expertId, @PathVariable Double discountPercentage) {
+    @PostMapping("/discount/{expertId}/{discountPercentage}/{date}")
+    public ResponseEntity<?> applyDiscount(@PathVariable Integer expertId, @PathVariable Double discountPercentage, @PathVariable LocalDate date) {
 
-        expertService.applyDiscount(expertId, discountPercentage);
-        return ResponseEntity.ok("Discount applied for 3 days");
+        expertService.applyDiscount(expertId, discountPercentage,date);
+        return ResponseEntity.ok("Discount applied");
     }
 }
