@@ -10,11 +10,15 @@ import org.example.ruwaa.Repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class ExpertService
 {
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final ExpertRepository expertRepository;
     private final ReviewRepository reviewRepository;
 
@@ -49,33 +53,35 @@ public class ExpertService
         return expertRepository.findMostActiveExpert(category).orElseThrow(() -> new ApiException("no experts added to this category"));
     }
 
-    public void acceptReview (Integer reviewId, Review review) {
-        Review review1 = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
 
-        review1.setStatus("Accepted");
-        review1.setContent(review.getContent());
-        reviewRepository.save(review1);
-    }
-
-
-    public void rejectReview (Integer reviewId) {
-        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
-
-        review.setStatus("Rejected");
-    }
-
-
-    public void rejectAll (Integer expertId) {
-        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
-
-        List<Review> reviews = reviewRepository.findAllByExpert(expert);
-
-        for (Review review : reviews) {
-            if (review.getStatus().equals("Pending")) {
-                review.setStatus("Rejected");
-            }
+    public List<Expert> getExpertByCategory (String category) {
+        List<Expert> experts = expertRepository.findExpertByCategory(category);
+        if (experts.isEmpty()) {
+            throw new ApiException("No experts found");
         }
-        reviewRepository.saveAll(reviews);
+
+        return experts;
+    }
+
+
+
+    public void applyDiscount(Integer expertId, Double discountPercentage) {
+        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new ApiException("Expert not found"));
+
+        Double originalPrice = expert.getConsult_price();
+
+        double newPrice = originalPrice * (1 - discountPercentage / 100);
+        expert.setConsult_price(newPrice);
+        expertRepository.save(expert);
+
+        scheduler.schedule(() -> {
+            Expert e = expertRepository.findById(expertId).orElse(null);
+            if (e != null) {
+                e.setConsult_price(originalPrice);
+                expertRepository.save(e);
+            }
+        }, 3, TimeUnit.DAYS);
+
     }
 
 }

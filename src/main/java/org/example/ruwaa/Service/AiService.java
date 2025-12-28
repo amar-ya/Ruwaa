@@ -49,11 +49,4 @@ public class AiService {
 
     }
 
-
-//    public String testAI(){
-//    return askAI("can you replay me with hello in arabic?");
-//    }
-
-
-
 }

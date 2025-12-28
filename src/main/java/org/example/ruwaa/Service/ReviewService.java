@@ -23,6 +23,7 @@ public class ReviewService
     private final PostRepository postRepository;
     private final PaymentService paymentService;
     private final UsersRepository usersRepository;
+    private final CustomerRepository customerRepository;
     private final SendMailService sendMailService;
     private final AiService aiService;
 
@@ -150,6 +151,77 @@ public class ReviewService
     }
 
 
+    public void acceptReview (Integer reviewId, Review review) {
+        Review review1 = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
+
+        review1.setStatus("Accepted");
+        review1.setContent(review.getContent());
+        reviewRepository.save(review1);
+    }
+
+
+    public void rejectReview (Integer reviewId) {
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
+
+        review.setStatus("Rejected");
+    }
+
+
+    public void rejectAll (Integer expertId) {
+        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+
+        List<Review> reviews = reviewRepository.findAllByExpert(expert);
+
+        for (Review review : reviews) {
+            if (review.getStatus().equals("Pending")) {
+                review.setStatus("Rejected");
+            }
+        }
+        reviewRepository.saveAll(reviews);
+    }
+
+
+    public List<Review> getReviewsRequest (Integer expertId) {
+        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("Expert not found"));
+
+        List<Review> reviews = reviewRepository.findAllByExpert(expert);
+        if (reviews.isEmpty()) {
+            throw new ApiException("No reviews found");
+        }
+        return reviews;
+    }
+
+
+    public List<Review> getSendRequests (Integer customerId) {
+        Customer customer = customerRepository.findCustomerById(customerId).orElseThrow(() -> new ApiException("Customer not found"));
+
+        List<Review> customerRequests = new ArrayList<>();
+        List<Review> all = reviewRepository.findAll();
+
+        for (Review review : all) {
+            if (review.getPost().getUsers().getId().equals(customerId)){
+                customerRequests.add(review);
+            }
+        }
+        return customerRequests;
+    }
+
+    public List<Review> getCompletedReviewsByPost(Integer postId) {
+        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("Post not found"));
+
+        List<Review> reviews = reviewRepository.findAllByPost(post);
+        List<Review> complete = new ArrayList<>();
+
+        for (Review review : reviews) {
+            if (review.getStatus().equals("Completed")) {
+                complete.add(review);
+            }
+        }
+        if (reviews.isEmpty()) {
+            throw new ApiException("No reviews found");
+        }
+        return complete;
+    }
     public String makeReviewTemplate(Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
