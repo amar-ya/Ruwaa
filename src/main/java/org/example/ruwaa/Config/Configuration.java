@@ -31,20 +31,29 @@ public class Configuration
                         .requestMatchers("/api/v1/auth/signup/customer",
                                 "/api/v1/auth/signup/expert",
                                 "/api/v1/auth/login",
+                                "/api/v1/auth/admin",
                                 "/api/v1/payment/thanks",
                                 "/api/v1/category/get",
                                 "/api/v1/category/get/{name}",
                                 "/api/v1/chat/create",
                                 "/api/v1/message/display-chat/{chat_id}",
-                                "/api/v1/message/send/{chat_id}").permitAll()
+                                "/api/v1/message/send/{chat_id}",
+                                "/api/v1/post/view/learning/{postId}").permitAll()
 
                         .requestMatchers("/api/v1/review/finished",
-                                "/api/v1/review//unfinished").hasAuthority("EXPERT")
+                                "/api/v1/review//unfinished",
+                                "/api/v1/post/add/learning").hasAuthority("EXPERT")
 
                         .requestMatchers("/api/v1/expert//most-active/category/{category}",
                                 "/api/v1/post/create",
                                 "/api/v1/review/request-review/{postId}/{expertId}",
-                                "/api/v1/subscription/subscribe").hasAuthority("CUSTOMER")
+                                "/api/v1/subscription/subscribe/month",
+                                "/api/v1/subscription/subscribe/3month",
+                                "/api/v1/subscription/subscribe/6month",
+                                "/api/v1/card/add",
+                                "/api/v1/post/add/work",
+                                "/api/v1/post/my-posts",
+                                "/api/v1/post/view/learning/{postId}").hasAuthority("CUSTOMER")
 
                         .requestMatchers("/api/v1/auth/me",
                                 "/api/v1/auth/me",

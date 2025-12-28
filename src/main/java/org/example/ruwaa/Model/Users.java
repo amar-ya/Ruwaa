@@ -39,9 +39,8 @@ public class Users implements UserDetails
     @Column(columnDefinition = "varchar(50) unique not null")
     private String email;
 
-    @Column(columnDefinition = "varchar(10) unique not null")
+    @Column(columnDefinition = "varchar(13) unique not null")
     private String phone;
-    @Pattern(regexp = "^(?i)(CUSTOMER|EXPERT|ADMIN)$", message = "role invalid")
     @Column(columnDefinition = "varchar(10) not null")
     private String role;
 

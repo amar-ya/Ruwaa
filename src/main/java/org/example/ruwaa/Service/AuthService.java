@@ -36,6 +36,7 @@ public class AuthService  {
         }
         admin.setRole("ADMIN");
         admin.setCreatedAt(LocalDateTime.now());
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         usersRepository.save(admin);
         String token = jwtUtil.generateToken(admin);
         return new AuthResponse(token, admin.getUsername(), admin.getRole());
@@ -63,6 +64,7 @@ public class AuthService  {
         u.setEmail(auth.getEmail());
         u.setName(auth.getName());
         u.setPassword(passwordEncoder.encode(auth.getPassword()));
+        u.setPhone(auth.getPhone_number());
         u.setCreatedAt(LocalDateTime.now());
         u.setRole("EXPERT");
         Expert e = new Expert();
@@ -72,7 +74,6 @@ public class AuthService  {
         e.setConsult_price(auth.getAmount());
         e.setUsers(u);
         expertRepository.save(e);
-
         return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
     }
 

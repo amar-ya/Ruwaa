@@ -27,7 +27,6 @@ public class RegisterExpertRequest
     private String phone_number;
     @NotEmpty(message = "name is required")
     private String name;
-    @Pattern(regexp = "^(?i)(sport|art|science|business|media|law|trading)$", message = "invalid category choice")
     @NotEmpty(message = "category is required")
     private String category;
     private Double amount;
