@@ -48,7 +48,9 @@ public class Configuration
                                 "/api/v1/chat/create",
                                 "/api/v1/message/display-chat/{chat_id}",
                                 "/api/v1/message/send/{chat_id}",
-                                "/api/v1/post/view/learning/{postId}").permitAll()
+                                "/api/v1/post/view/learning/{postId}",
+                                "/api/v1/post/free-feed",
+                                "/api/v1/post/work-feed").permitAll()
 
                         .requestMatchers("/api/v1/review/finished",
                                 "/api/v1/review//unfinished",
@@ -63,14 +65,16 @@ public class Configuration
                                 "/api/v1/card/add",
                                 "/api/v1/post/add/work",
                                 "/api/v1/post/my-posts",
-                                "/api/v1/post/view/learning/{postId}").hasAuthority("CUSTOMER")
+                                "/api/v1/post/view/learning/{post_id}",
+                                "/api/v1/post/improve-attachment/{post_id}").hasAuthority("CUSTOMER")
 
                         .requestMatchers("/api/v1/auth/me",
                                 "/api/v1/auth/me",
                                 "/api/v1/auth/update-customer",
                                 "/api/v1/auth/update-expert",
                                 "/api/v1/chat/close/{id}",
-                                "/api/v1/expert/most-active/category/{category}").hasAnyAuthority("CUSTOMER", "EXPERT")
+                                "/api/v1/expert/most-active/category/{category}",
+                                "/api/v1/post/subscription-feed").hasAnyAuthority("CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/category/create",
                                 "/api/v1/category/update/{id}",

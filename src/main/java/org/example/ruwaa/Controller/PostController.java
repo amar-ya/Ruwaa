@@ -1,17 +1,19 @@
 package org.example.ruwaa.Controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.DTOs.LearningContentDTO;
 import org.example.ruwaa.DTOs.WorkPostDTO;
-import org.example.ruwaa.Model.Post;
 import org.example.ruwaa.Service.PostService;
-import org.example.ruwaa.Service.SendMailService;
+import org.example.ruwaa.Stability.StabilityImageClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+import static org.example.ruwaa.Stability.ImproveMode.UPSCALE_CREATIVE;
 
 @RestController
 @RequestMapping("/api/v1/post")
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController
 {
     private final PostService postService;
+    private final StabilityImageClient stabilityImageClient;
 
 //    @PostMapping("/create")
 //    public ResponseEntity<?> postPost(@RequestBody @Valid Post post, Authentication auth){
@@ -41,9 +44,9 @@ public class PostController
         return ResponseEntity.status(200).body(postService.workFeed());
     }
 
-    @GetMapping("/subscription-feed/{userId}")
-    public ResponseEntity<?> subscriptionFeed(@PathVariable Integer userId) {
-        return ResponseEntity.status(200).body(postService.subscribeFeed(userId));
+    @GetMapping("/subscription-feed")
+    public ResponseEntity<?> subscriptionFeed(Authentication auth) {
+        return ResponseEntity.status(200).body(postService.subscribeFeed(auth.getName()));
     }
 
     @GetMapping("/my-posts")
@@ -70,8 +73,8 @@ public ResponseEntity<?> viewWorkPost(@PathVariable Integer userId, @PathVariabl
     }
 
     @PostMapping("/add/learning")
-    public ResponseEntity<?> addLearningContent(Authentication auth, @RequestBody LearningContentDTO dto) {
-        postService.addLearningContent(auth.getName(), dto);
+    public ResponseEntity<?> addLearningContent(Authentication auth,@RequestParam("image") MultipartFile a, @RequestBody LearningContentDTO dto) throws IOException {
+            postService.addLearningContent(auth.getName(),a, dto);
         return   ResponseEntity.status(200).body(new ApiResponse("Learning content added :)"));
 
     }
@@ -113,11 +116,15 @@ public ResponseEntity<?> viewWorkPost(@PathVariable Integer userId, @PathVariabl
     }
 
 
-    @GetMapping("/review/{postId}")
-    public ResponseEntity<?> reviewMyWork(@PathVariable Integer postId) {
-        return ResponseEntity.status(200).body(new ApiResponse(postService.reviewMyWork(postId)));
+    @GetMapping("/review/{post_id}")
+    public ResponseEntity<?> reviewMyWork(@PathVariable Integer post_id) {
+        return ResponseEntity.status(200).body(new ApiResponse(postService.reviewMyWork(post_id)));
     }
 
+    @PutMapping("/improve-attachment/{post_id}")
+    public ResponseEntity<?> improveAttachment(@PathVariable Integer post_id) {
+            return ResponseEntity.status(200).body(stabilityImageClient.upscale(post_id,UPSCALE_CREATIVE));
+    }
 
 
 }

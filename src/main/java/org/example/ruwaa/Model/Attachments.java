@@ -22,7 +22,7 @@ public class Attachments
 
     private String type;
 
-    private byte[] date;
+    private byte[] data;
 
     @ManyToOne
     @JsonIgnore
