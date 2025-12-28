@@ -26,7 +26,17 @@ public class Configuration
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
+//                .authorizeHttpRequests(auth -> auth
+//
+//                        .requestMatchers("/api/v1/auth/signup/customer",
+//                                "/api/v1/auth/signup/expert",
+//                                "/api/v1/auth/login",
+//                                "/api/v1/payment/thanks",
+//                                "/api/v1/category/get",
+//                                "/api/v1/category/get/{name}",
+//                                "/api/v1/chat/create",
+//                                "/api/v1/message/display-chat/{chat_id}",
+//                                "/api/v1/message/send/{chat_id}").permitAll()
 
                         .requestMatchers("/api/v1/auth/signup/customer",
                                 "/api/v1/auth/signup/expert",

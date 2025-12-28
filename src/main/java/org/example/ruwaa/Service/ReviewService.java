@@ -37,16 +37,16 @@ public class ReviewService
         return reviews;
     }
 
-    public void add(Integer expert_id,Integer media_id,Review review){
-        Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
-
-        Post m = mediaRepository.findPostById(media_id).orElseThrow(() -> new ApiException("post not found"));
-        review.setRate(1);
-        review.setHasRated(false);
-        review.setPost(m);
-        review.setExpert(e);
-        reviewRepository.save(review);
-    }
+//    public void add(Integer expert_id,Integer media_id,Review review){
+//        Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
+//
+//        Post m = mediaRepository.findPostById(media_id).orElseThrow(() -> new ApiException("post not found"));
+//        review.setRate(1);
+//        review.setHasRated(false);
+//        review.setPost(m);
+//        review.setExpert(e);
+//        reviewRepository.save(review);
+//    }
 
     public void update(Integer id, Review review){
         Review r = reviewRepository.findReviewById(id).orElseThrow(() -> new ApiException("review not found"));
@@ -158,9 +158,8 @@ public class ReviewService
         chatRepository.save(chat);
         reviewRepository.save(review);
 
-        Double credit = expert.getExpert().getConsult_price()-0; //change 0
+        Double credit = expert.getExpert().getConsult_price(); //********* هنا نحط النسبة
 
-     //***   expert1.setBalance() !!!
         expert.setBalance(expert.getBalance()+credit);
         expertRepository.save(expert.getExpert());
     }
@@ -242,8 +241,18 @@ public class ReviewService
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
         //AI
-
-        return  aiService.askAI("Hello");
+        String work = aiService.dtoPost(p);
+        return  aiService.askAI("بناءًا على العمل المعطى (قد يكون كود برمجي، عمل فني، الخ)\n" +
+                "ابيك تجيب المعايير القياسية الفعلية\n" +
+                "بشكل مباشر مثلا:\n" +
+                "المعايير الأساسية لتقييم الرسمة الرقمية الفنية\n" +
+                "1.  المنظور (Perspective)\n" +
+                "2.  التشريح والنِسَب (Anatomy & Proportion) (للشخصيات)\n" +
+                "الخ..\n" +
+                "\n" +
+                "المهم ابيك تعطينياها مباشرة وبدون ايموجي\n" +
+                "\n" +
+                "\n"+work);
     }
 
     public String reviewAssistance(Integer postId){
@@ -252,8 +261,29 @@ public class ReviewService
 
         //AI
 
-
-        return aiService.askAI("Hello");
+        String work = aiService.dtoPost(p);
+        return aiService.askAI("بناءًا على العمل المعطى (قد يكون كود برمجي، عمل فني، الخ)\n" +
+                "ابيك تجيب المعايير القياسية الفعلية\n" +
+                "بشكل مباشر مع ذكر الاسئلة والادوات اللتي قد تساعد، مثلا: \n" +
+                "المعايير الأساسية لتقييم الرسمة الرقمية الفنية\n" +
+                "1. التكوين (Composition) \n" +
+                "\n" +
+                "\n" +
+                " هل عين المشاهد تُقاد بذكاء؟\n" +
+                " هل هناك نقطة تركيز واضحة؟\n" +
+                " هل الفراغ مستغل جيدًا؟\n" +
+                "\n" +
+                "أدوات تقييم:\n" +
+                "\n" +
+                "Rule of thirds\n" +
+                "Balance\n" +
+                "Visual hierarchy\n" +
+                "Negative space\n" +
+                "\n" +
+                "\n" +
+                "عطني الاجابة فقط \n" +
+                " مباشرة وبدون ايموجي \n" +
+                " "+work);
     }
 
 

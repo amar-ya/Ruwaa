@@ -9,6 +9,9 @@ import org.example.ruwaa.Repository.ExpertRepository;
 import org.example.ruwaa.Repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -68,8 +71,9 @@ public class ExpertService
 
 
 
-    public void applyDiscount(Integer expertId, Double discountPercentage) {
+    public void applyDiscount(Integer expertId, Double discountPercentage, LocalDate date) {
         Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new ApiException("Expert not found"));
+        if(date.isBefore(LocalDate.now())) throw new ApiException("invalid date");
 
         Double originalPrice = expert.getConsult_price();
 
@@ -77,13 +81,17 @@ public class ExpertService
         expert.setConsult_price(newPrice);
         expertRepository.save(expert);
 
+
+        long days = ChronoUnit.DAYS.between(LocalDate.now(), date);
+
+
         scheduler.schedule(() -> {
             Expert e = expertRepository.findById(expertId).orElse(null);
             if (e != null) {
                 e.setConsult_price(originalPrice);
                 expertRepository.save(e);
             }
-        }, 3, TimeUnit.DAYS);
+        }, days, TimeUnit.DAYS);
 
     }
 

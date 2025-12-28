@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,8 @@ public class AuthService  {
     private final CustomerRepository customerRepository;
     private final ExpertRepository expertRepository;
     private final CategoriesRepository categoriesRepository;
+
+    public List<Users> getAllUsers(){return usersRepository.findAll();}
 
 
     public AuthResponse admin(Users admin){
@@ -123,9 +126,10 @@ public class AuthService  {
         u.setCreatedAt(LocalDateTime.now());
         u.setRole("CUSTOMER");
         u.setPhone(auth.getPhone_number());
-
+        usersRepository.save(u);
         Customer c = new Customer();
         c.setUsers(u);
+
         customerRepository.save(c);
         return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
     }
