@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -61,6 +62,14 @@ public class Users implements UserDetails
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "users", orphanRemoval = true)
     private List<Card> cards;
+
+
+
+    //new
+    @ManyToMany
+    @JsonIgnore
+    private Set<Post> requestedPrivateWorks;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,9 +18,7 @@ public class Expert
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String about_me;
-
-    private String Linkedin_url;
+    private String linkedin_url;
 
     private Integer review_count;
 
@@ -31,6 +29,10 @@ public class Expert
     private Boolean isActive;
 
     private byte[] data;
+
+    private Double actual_rating;
+
+    private Double total_rating;
 
 
 

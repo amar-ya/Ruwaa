@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Subscription
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime subscription_date;

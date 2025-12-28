@@ -2,6 +2,7 @@ package org.example.ruwaa.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -21,13 +23,18 @@ public class Post
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String title;
+    //private String title;
 
     private String content;
 
     private Integer views;
-
+    @Pattern(regexp = "^(public_work|private_work|subscription_content|free_content)$",message = "role can be admin or user")
     private String type;
+
+    //new
+    @ManyToMany(mappedBy = "requestedPrivateWorks")
+    private Set<Users> permitWorkVisiablity;
+
 
     @ManyToOne
     @JsonIgnore

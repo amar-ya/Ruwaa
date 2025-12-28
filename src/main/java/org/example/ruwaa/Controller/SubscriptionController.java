@@ -16,6 +16,7 @@ public class SubscriptionController
 
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribe(Authentication auth){
+        System.out.println(auth.getName());
         subscriptionService.subscribe(auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("thank you for subscribing"));
     }

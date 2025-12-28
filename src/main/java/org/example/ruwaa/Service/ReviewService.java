@@ -2,17 +2,21 @@ package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
+import org.example.ruwaa.DTOs.ReviewDTO;
 import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService
 {
+    private final ChatRepository chatRepository;
+
     private final ReviewRepository reviewRepository;
     private final PostRepository mediaRepository;
     private final ExpertRepository expertRepository;
@@ -20,6 +24,9 @@ public class ReviewService
     private final PaymentService paymentService;
     private final UsersRepository usersRepository;
     private final CustomerRepository customerRepository;
+    private final SendMailService sendMailService;
+    private final AiService aiService;
+
 
     public List<Review> getAll(){
         List<Review> reviews = reviewRepository.findAll();
@@ -32,8 +39,9 @@ public class ReviewService
     public void add(Integer expert_id,Integer media_id,Review review){
         Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
 
-        Post m = mediaRepository.findPostById(media_id).orElseThrow(() -> new ApiException("media not found"));
-
+        Post m = mediaRepository.findPostById(media_id).orElseThrow(() -> new ApiException("post not found"));
+        review.setRate(1);
+        review.setHasRated(false);
         review.setPost(m);
         review.setExpert(e);
         reviewRepository.save(review);
@@ -68,18 +76,78 @@ public class ReviewService
         return r;
     }
 
-    public void requestReview(Integer postId, Integer expertId) {
+//    public void requestReview(Integer postId, Integer expertId) {
+//
+//        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+//
+//        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
+//
+//
+//        Review review = new Review();
+//        review.setStatus("Pending");
+//        review.setExpert(expert);
+//        review.setPost(post);
+//        reviewRepository.save(review);
+//    }
 
-        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
-
-        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
 
 
-        Review review = new Review();
-        review.setStatus("Pending");
-        review.setExpert(expert);
-        review.setPost(post);
+    public void rateReview(Integer reviewId,Integer rate){
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()-> new ApiException("review not found"));
+        if(review.getHasRated()) throw new ApiException("you have rated this review before");
+        if(rate>5||rate<1) throw new ApiException("invalid rate number");
+        review.setHasRated(true);
+        review.setRate(rate);
         reviewRepository.save(review);
+
+        Expert expert = review.getExpert();
+
+        //I need variable names
+//    expert.setSUM(expert.getSUM()+rate);
+//    expert.setCounter(expert.getCounter()+1);
+//    expert.setReviewRate(expert.getSUM()/expert.getCounter());
+
+        expertRepository.save(expert);
+
+    }
+
+
+    public void requestReview(Integer expert_id,Integer workId){
+        Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
+
+        Post p = mediaRepository.findPostById(workId).orElseThrow(() -> new ApiException("work not found"));
+        if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
+        Review review = new Review();
+        review.setStatus("Pending"); ///****************Check regex
+        review.setRate(1);
+        review.setHasRated(false);
+        review.setPost(p);
+        review.setExpert(e);
+        reviewRepository.save(review);
+        //notify expert         **update link later for better UX
+        String body = "a new review request worth "+e.getConsult_price()+"SR,\n\n" + //**** كم نخلي نسبة الربح حقتنا عشان نطرح
+                "View request link: \n\n" +
+                "Work content: "+p.getContent();
+        sendMailService.sendMessage(e.getUsers().getEmail(),"New Review Request From "+p.getUsers().getName(),body);
+    }
+
+    public void submitReview(Integer reviewId,Integer userId ,ReviewDTO reviewDTO){
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()-> new ApiException("review not found"));
+        Users expert = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("expert not found"));
+        if(!expert.getRole().equals("EXPERT")) throw new ApiException("unAuthorized writing review");
+        Expert expert1 = expertRepository.findExpertById(userId).orElseThrow();
+        if(!review.getExpert().equals(expert1)) throw new ApiException("unAuthorized, belongs to another expert");
+
+        review.setContent(review.getContent());
+        review.setStatus("FINISHED"); //***********CHECK REGEX
+
+        Chat chat = new Chat(null,true,new ArrayList<>(),review);
+        review.setChat(chat);
+        chatRepository.save(chat);
+        reviewRepository.save(review);
+
+     //***   expert1.setBalance() !!!
+
     }
 
 
@@ -154,4 +222,28 @@ public class ReviewService
         }
         return complete;
     }
+    public String makeReviewTemplate(Integer postId){
+        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
+
+        //AI
+
+        return  aiService.askAI("Hello");
+    }
+
+    public String reviewAssistance(Integer postId){
+        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
+
+        //AI
+
+
+        return aiService.askAI("Hello");
+    }
+
+
+
+
+
 }
+
