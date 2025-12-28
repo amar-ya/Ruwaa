@@ -7,6 +7,7 @@ import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -117,6 +118,17 @@ public class ReviewService
 
         Post p = mediaRepository.findPostById(workId).orElseThrow(() -> new ApiException("work not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
+        if (p.getUsers().getCards() == null){
+            throw new ApiException("add a card first to pay");
+        }
+        Subscription s = p.getUsers().getCustomer().getSubscription();
+        if(s == null || s.getEnd_date().isBefore(LocalDateTime.now())){
+            Double amount = e.getConsult_price()+(e.getConsult_price()*0.2);
+            paymentService.processPayment(amount,p.getUsers().getCards().get(0));
+        }else {
+            Double amount = e.getConsult_price()+(e.getConsult_price()*0.1);
+            paymentService.processPayment(amount,p.getUsers().getCards().get(0));
+        }
         Review review = new Review();
         review.setStatus("Pending"); ///****************Check regex
         review.setRate(1);

@@ -59,6 +59,9 @@ public class ExpertService
 
     public List<Expert> getExpertByCategory (String category) {
         List<Expert> experts = expertRepository.findExpertByCategory(category);
+        for (Expert e : experts) {
+            e.setConsult_price(e.getConsult_price()+(e.getConsult_price()*0.2));
+        }
         if (experts.isEmpty()) {
             throw new ApiException("No experts found");
         }

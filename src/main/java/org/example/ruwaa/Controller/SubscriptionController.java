@@ -14,10 +14,24 @@ public class SubscriptionController
 {
     private final SubscriptionService subscriptionService;
 
-    @PostMapping("/subscribe")
+    @PostMapping("/subscribe/month")
     public ResponseEntity<?> subscribe(Authentication auth){
         System.out.println(auth.getName());
         subscriptionService.subscribe(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("thank you for subscribing"));
+    }
+
+    @PostMapping("/subscribe/3month")
+    public ResponseEntity<?> subscribeThreeMonths(Authentication auth){
+        System.out.println(auth.getName());
+        subscriptionService.subscribeThreeMonths(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("thank you for subscribing"));
+    }
+
+    @PostMapping("/subscribe/6month")
+    public ResponseEntity<?> subscribeSixMonths(Authentication auth){
+        System.out.println(auth.getName());
+        subscriptionService.subscribeSixMonths(auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("thank you for subscribing"));
     }
 

@@ -15,6 +15,7 @@ import org.example.ruwaa.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 
@@ -106,15 +107,15 @@ public class PostService
     return p;
     }
 
-    public Post viewLearningPost(Integer userId ,Integer postId){
+    public Post viewLearningPost(String username ,Integer postId){
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
-        Users user = usersRepository.findUserById(userId).orElseThrow(()-> new ApiException("user not found"));
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
 
         if(p.getType().equals("subscription_content")) {
 
             if (user.getRole().equals("CUSTOMER")) {
-                Customer customer = customerRepository.findCustomerById(userId).orElseThrow();
-                if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDate.now()))
+                Customer customer = user.getCustomer();
+                if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDateTime.now()))
                     throw new ApiException("this content needs subscription");
 
             }
@@ -140,7 +141,7 @@ public class PostService
         if(users.getRole().equals("EXPERT")) throw new ApiException("subscription content feed allowed for customers only");
         if(!users.getRole().equals("ADMIN")){
             Customer customer = customerRepository.findCustomerById(userId).orElseThrow();
-            if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDate.now()))
+            if (customer.getSubscription() == null || customer.getSubscription().getEnd_date().isBefore(LocalDateTime.now()))
                 throw new ApiException("this feed needs subscription");
         }
         return postRepository.findPostByType("subscription_content");
@@ -155,9 +156,9 @@ public class PostService
 
 
 
-    public List<Post> getMyPost(Integer userId){
-        Users user = usersRepository.findUserById(userId).orElseThrow(() -> new ApiException("Account not found"));
-        return postRepository.findPostByUsers_id(userId);
+    public List<Post> getMyPost(String username){
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("Account not found"));
+        return postRepository.findPostByUsers_id(user.getId());
     }
 
 

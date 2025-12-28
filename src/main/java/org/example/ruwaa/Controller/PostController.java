@@ -46,9 +46,9 @@ public class PostController
         return ResponseEntity.status(200).body(postService.subscribeFeed(userId));
     }
 
-    @GetMapping("/my-posts/{userId}")
-    public ResponseEntity<?> getMyPosts(@PathVariable Integer userId) {
-        return ResponseEntity.status(200).body( postService.getMyPost(userId) );
+    @GetMapping("/my-posts")
+    public ResponseEntity<?> getMyPosts(Authentication auth) {
+        return ResponseEntity.status(200).body( postService.getMyPost(auth.getName()) );
     }
 
 //=================
@@ -57,20 +57,21 @@ public ResponseEntity<?> viewWorkPost(@PathVariable Integer userId, @PathVariabl
     return   ResponseEntity.status(200).body(postService.viewWorkPost(userId, postId));
 }
 
-    @GetMapping("/view/learning/{userId}/{postId}")
-    public ResponseEntity<?> viewLearningPost(@PathVariable Integer userId, @PathVariable Integer postId) {
-        return ResponseEntity.status(200).body(postService.viewLearningPost(userId, postId));
+    @GetMapping("/view/learning/{postId}")
+    public ResponseEntity<?> viewLearningPost(Authentication auth, @PathVariable Integer postId) {
+        return ResponseEntity.status(200).body(postService.viewLearningPost(auth.getName(), postId));
     }
 
-    @PostMapping("/add/work/{username}")
-    public ResponseEntity<?> addWorkPost(@PathVariable String username, @RequestBody WorkPostDTO dto) {
-        postService.addWorkPost(username, dto);
+    @PostMapping("/add/work")
+    public ResponseEntity<?> addWorkPost(Authentication auth, @RequestBody WorkPostDTO dto) {
+        System.out.println(dto.toString()+"\n"+auth);
+        postService.addWorkPost(auth.getName(), dto);
        return   ResponseEntity.status(200).body(new ApiResponse("Work added :) ask for reviews!"));
     }
 
-    @PostMapping("/add/learning/{username}")
-    public ResponseEntity<?> addLearningContent(@PathVariable String username, @RequestBody LearningContentDTO dto) {
-        postService.addLearningContent(username, dto);
+    @PostMapping("/add/learning")
+    public ResponseEntity<?> addLearningContent(Authentication auth, @RequestBody LearningContentDTO dto) {
+        postService.addLearningContent(auth.getName(), dto);
         return   ResponseEntity.status(200).body(new ApiResponse("Learning content added :)"));
 
     }

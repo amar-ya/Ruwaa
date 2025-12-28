@@ -23,7 +23,7 @@ public class Subscription
 
     private LocalDateTime subscription_date;
 
-    private LocalDate end_date;
+    private LocalDateTime end_date;
 
     @OneToOne
     @MapsId
