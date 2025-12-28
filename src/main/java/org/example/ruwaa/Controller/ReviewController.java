@@ -2,9 +2,7 @@ package org.example.ruwaa.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
-import org.example.ruwaa.Model.Review;
 import org.example.ruwaa.DTOs.ReviewDTO;
-import org.example.ruwaa.Service.PaymentService;
 import org.example.ruwaa.Service.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -47,10 +45,10 @@ public class ReviewController
         return ResponseEntity.status(200).body("Review request sent successfully");
     }
 
-    @PutMapping("/submit/{reviewId}/{userId}")
-    public ResponseEntity<?> submitReview(@PathVariable Integer reviewId,@PathVariable Integer userId,@RequestBody ReviewDTO reviewDTO) {
-        reviewService.submitReview(reviewId, userId, reviewDTO);
-        return ResponseEntity.status(200).body("Review submitted successfully");
+    @PutMapping("/submit/{reviewId}")
+    public ResponseEntity<?> submitReview(@PathVariable Integer reviewId,Authentication auth,@RequestBody ReviewDTO reviewDTO) {
+        reviewService.submitReview(reviewId, auth.getName(), reviewDTO);
+        return ResponseEntity.status(200).body(new ApiResponse("Review submitted successfully"));
     }
 
 
@@ -61,23 +59,30 @@ public class ReviewController
 
 
     @PutMapping("/accept-review/{reviewId}")
-    public ResponseEntity<?> acceptReview (@PathVariable Integer reviewId, @RequestBody Review review) {
-        reviewService.acceptReview(reviewId, review);
+    public ResponseEntity<?> acceptReview (@PathVariable Integer reviewId, Authentication auth) {
+        reviewService.acceptReview(auth.getName(), reviewId);
         return ResponseEntity.status(200).body(new ApiResponse("review send successfully"));
     }
 
 
-    @PostMapping("/reject-review/{reviewId}")
-    public ResponseEntity<?> rejectReview (@PathVariable Integer reviewId) {
-        reviewService.rejectReview(reviewId);
+    @PostMapping("/reject-review/{review_id}")
+    public ResponseEntity<?> rejectReview (Authentication auth, @PathVariable Integer review_id, @RequestBody String reason) {
+        reviewService.rejectReview(auth.getName(), review_id,reason);
         return ResponseEntity.status(200).body(new ApiResponse("review rejected successfully"));
     }
 
-    @PostMapping("/reject-all-reviews/{expertId}")
-    public ResponseEntity<?> rejectAllReviews (@PathVariable Integer expertId) {
-        reviewService.rejectAll(expertId);
+    @PostMapping("/reject-all-reviews/")
+    public ResponseEntity<?> rejectAllReviews (Authentication auth) {
+        reviewService.rejectAll(auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("All reviews rejected successfully"));
     }
+
+
+    @GetMapping("/get-pending-review")
+    public ResponseEntity<?> getPendingReviews (Authentication auth) {
+        return ResponseEntity.status(200).body(reviewService.getPendingReviews(auth.getName()));
+    }
+
 
     @GetMapping("/get-reviews-requests/{expertId}")
     public ResponseEntity<?> getReviewsRequest (@PathVariable Integer expertId) {
@@ -85,14 +90,14 @@ public class ReviewController
     }
 
 
-    @GetMapping("/get-send-requests/{customerId}")
-    public ResponseEntity<?> getSendRequests (@PathVariable Integer customerId) {
-        return ResponseEntity.status(200).body(reviewService.getSendRequests(customerId));
+    @GetMapping("/get-send-requests/")
+    public ResponseEntity<?> getSendRequests (Authentication auth) {
+        return ResponseEntity.status(200).body(reviewService.getSentRequests(auth.getName()));
     }
 
     @GetMapping("/get-completed-reviews/{postId}")
-    public ResponseEntity<?> getCompletedReviewsByPost (@PathVariable Integer postId) {
-        return ResponseEntity.status(200).body(reviewService.getCompletedReviewsByPost(postId));
+    public ResponseEntity<?> getCompletedReviewsByPost (@PathVariable Integer postId, Authentication auth) {
+        return ResponseEntity.status(200).body(reviewService.getCompletedReviewsByPost(postId, auth.getName()));
     }
     @GetMapping("/assist/{postId}")
     public ResponseEntity<?> reviewAssistance(@PathVariable Integer postId) {

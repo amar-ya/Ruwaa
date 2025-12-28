@@ -69,6 +69,7 @@ public class AuthService  {
         u.setPassword(passwordEncoder.encode(auth.getPassword()));
         u.setPhone(auth.getPhone_number());
         u.setCreatedAt(LocalDateTime.now());
+        u.setBalance(0.0);
         u.setRole("EXPERT");
         Expert e = new Expert();
         e.setLinkedin_url(auth.getLinkedin_url());
@@ -76,6 +77,10 @@ public class AuthService  {
         e.setCategory(c);
         e.setConsult_price(auth.getAmount());
         e.setUsers(u);
+        e.setCount_rating(0.0);
+        e.setTotal_rating(0.0);
+        e.setReview_count(0);
+
         expertRepository.save(e);
         return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());
     }

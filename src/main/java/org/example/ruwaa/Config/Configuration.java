@@ -26,18 +26,7 @@ public class Configuration
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests(auth -> auth
-//
-//                        .requestMatchers("/api/v1/auth/signup/customer",
-//                                "/api/v1/auth/signup/expert",
-//                                "/api/v1/auth/login",
-//                                "/api/v1/payment/thanks",
-//                                "/api/v1/category/get",
-//                                "/api/v1/category/get/{name}",
-//                                "/api/v1/chat/create",
-//                                "/api/v1/message/display-chat/{chat_id}",
-//                                "/api/v1/message/send/{chat_id}").permitAll()
-
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup/customer",
                                 "/api/v1/auth/signup/expert",
                                 "/api/v1/auth/login",
@@ -54,7 +43,9 @@ public class Configuration
 
                         .requestMatchers("/api/v1/review/finished",
                                 "/api/v1/review//unfinished",
-                                "/api/v1/post/add/learning").hasAuthority("EXPERT")
+                                "/api/v1/post/add/learning",
+                                "/api/v1/review/reject-review/{review_id}",
+                                "/api/v1/review/submit/{reviewId}").hasAuthority("EXPERT")
 
                         .requestMatchers("/api/v1/expert//most-active/category/{category}",
                                 "/api/v1/post/create",
@@ -80,7 +71,7 @@ public class Configuration
                                 "/api/v1/category/update/{id}",
                                 "/api/v1/category/delete/{id}",
                                 "/api/v1/chat/get",
-                                "/api/v1/customer/get").hasAuthority("ADMIN")
+                                "/api/v1/customer/get","/api/v1/expert/subscription-earning/**").hasAuthority("ADMIN")
 
 
                         .anyRequest().authenticated())

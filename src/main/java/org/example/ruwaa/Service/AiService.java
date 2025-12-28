@@ -55,22 +55,7 @@ public class AiService {
 
     public String dtoPost(Post p){
        WorkPostDTO dto = new WorkPostDTO(p.getContent(),true,p.getAttachments(),p.getCategory().getName());
-//        StringBuilder sb = new StringBuilder();
-//
-//        sb.append("Work Post Details:\n");
-//        sb.append("- Content: ").append(dto.getContent()).append("\n");
-//        sb.append("- Category: ").append(dto.getCategory()).append("\n");
-//        if (dto.getAttachments() == null || dto.getAttachments().isEmpty()) {
-//            sb.append("- Attachments: None\n");
-//        } else {
-//            sb.append("- Attachments:\n");
-//            dto.getAttachments().forEach(a ->
-//                    sb.append("  • ").append(a.getName()).append(" (")
-//                            .append(a.getDate()).append(")\n")
-//            );
-//        }
-//        System.out.println(sb.toString());
-    //   return sb.toString();
+
         String dtoString = "Work Post Details: Content: "+
                 dto.getContent()+", possible category : "+dto.getCategory()+", Attachments: ";
 
@@ -80,11 +65,12 @@ public class AiService {
 
            for(Attachments a: dto.getAttachments()){
                dtoString += "*"+a.getName()+"( "+
-                       a.getDate()+")";
+                       a.getData()+")";
            }
         }
         System.out.println(dtoString);
         return dtoString;
+//return "";
     }
 
 }

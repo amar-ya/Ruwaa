@@ -54,11 +54,10 @@ public class PostController
         return ResponseEntity.status(200).body( postService.getMyPost(auth.getName()) );
     }
 
-//=================
-@GetMapping("/view/work/{userId}/{postId}")
-public ResponseEntity<?> viewWorkPost(@PathVariable Integer userId, @PathVariable Integer postId) {
-    return   ResponseEntity.status(200).body(postService.viewWorkPost(userId, postId));
-}
+    @GetMapping("/view/work/{postId}")
+    public ResponseEntity<?> viewWorkPost(Authentication auth, @PathVariable Integer postId) {
+        return   ResponseEntity.status(200).body(postService.viewWorkPost(auth.getName(), postId));
+    }
 
     @GetMapping("/view/learning/{postId}")
     public ResponseEntity<?> viewLearningPost(Authentication auth, @PathVariable Integer postId) {
@@ -67,9 +66,8 @@ public ResponseEntity<?> viewWorkPost(@PathVariable Integer userId, @PathVariabl
 
     @PostMapping("/add/work")
     public ResponseEntity<?> addWorkPost(Authentication auth, @RequestBody WorkPostDTO dto) {
-        System.out.println(dto.toString()+"\n"+auth);
-        postService.addWorkPost(auth.getName(), dto);
-       return   ResponseEntity.status(200).body(new ApiResponse("Work added :) ask for reviews!"));
+            postService.addWorkPost(auth.getName(), dto);
+            return   ResponseEntity.status(200).body(new ApiResponse("Work added :) ask for reviews!"));
     }
 
     @PostMapping("/add/learning")
