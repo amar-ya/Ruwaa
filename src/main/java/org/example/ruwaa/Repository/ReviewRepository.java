@@ -23,6 +23,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>
     @Query("select r from Review r where r.status = 'Completed'  ")
     List<Review> findFinishedReviews();
 
+    @Query("select r from Review r where r.expert = ?1")
     List<Review> findAllByExpert(Expert expert);
 
     List<Review> findAllByPost(Post post);
