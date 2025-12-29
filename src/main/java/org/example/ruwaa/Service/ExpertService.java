@@ -85,7 +85,9 @@ public class ExpertService
         expert.setConsult_price(newPrice);
         expertRepository.save(expert);
 
-        long days = ChronoUnit.DAYS.between(LocalDate.now(), date);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime end = date.atStartOfDay();
+        long days = Duration.between(now, end).toDays();
 
         scheduler.schedule(() -> {
             Expert e = expertRepository.findExpertById(expert.getId()).orElse(null);

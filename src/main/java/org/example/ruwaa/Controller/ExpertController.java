@@ -17,6 +17,10 @@ import java.time.LocalDate;
 public class ExpertController
 {
     private final ExpertService expertService;
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.status(200).body(expertService.getAll());
+    }
 
     @GetMapping("/most-active/category/{category}")
     public ResponseEntity<?> findMostActiveExpertByCategory(@PathVariable String category)
@@ -54,12 +58,12 @@ public class ExpertController
     return ResponseEntity.status(200).body(new ApiResponse(expertService.subscriptionEarning(earningMonth,views)));
     }
 
-    @PutMapping("/activate")
+    @PutMapping("/activate/{expert}")
     public ResponseEntity<?> activateExp(@PathVariable Integer expert){
         expertService.activateExpert(expert);
         return ResponseEntity.status(200).body(new ApiResponse("activate complete"));
     }
-    @DeleteMapping("/reject")
+    @DeleteMapping("/reject/{expert}")
     public ResponseEntity<?> rejectExp(@PathVariable Integer expert){
         expertService.rejectExpert(expert);
         return ResponseEntity.status(200).body(new ApiResponse("reject complete, email sent"));

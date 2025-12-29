@@ -86,7 +86,7 @@ public class Configuration
                                 "/api/v1/chat/get",
                                 "/api/v1/customer/get","/api/v1/expert/subscription-earning/**"
                                ,"/api/v1/expert/activate","/api/v1/expert/reject"
-
+                                ,"/api/v1/auth/get-all","/api/v1/expert/get-all"
                         ).hasAuthority("ADMIN")
 
 
