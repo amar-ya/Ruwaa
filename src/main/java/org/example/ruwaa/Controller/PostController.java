@@ -29,21 +29,22 @@ public class PostController
 //       // mediaService.addPost(auth.getName(), post);
 //        return ResponseEntity.status(200).body(new ApiResponse("Added"));
     //}
+    //done
         @GetMapping("/get-all")
         public ResponseEntity<?> getAllPosts() {
           return   ResponseEntity.status(200).body(postService.getAll());
             }
-
+    //done
     @GetMapping("/free-feed")
     public ResponseEntity<?> freeFeed() {
         return ResponseEntity.status(200).body(postService.freeFeed());
     }
-
+    //done
     @GetMapping("/work-feed")
     public ResponseEntity<?> workFeed() {
         return ResponseEntity.status(200).body(postService.workFeed());
     }
-
+    //done
     @GetMapping("/subscription-feed")
     public ResponseEntity<?> subscriptionFeed(Authentication auth) {
         return ResponseEntity.status(200).body(postService.subscribeFeed(auth.getName()));
@@ -65,58 +66,58 @@ public class PostController
     }
 
     @PostMapping("/add/work")
-    public ResponseEntity<?> addWorkPost(Authentication auth, @RequestBody WorkPostDTO dto) {
-            postService.addWorkPost(auth.getName(), dto);
+    public ResponseEntity<?> addWorkPost(Authentication auth,@RequestPart("image") MultipartFile a, @RequestParam("content") String content, @RequestParam("isPublic") Boolean isPublic, @RequestParam("category")String category) throws IOException {
+        System.out.println(a.getOriginalFilename());
+            postService.addWorkPost(auth.getName(),a , content, isPublic, category);
             return   ResponseEntity.status(200).body(new ApiResponse("Work added :) ask for reviews!"));
     }
 
     @PostMapping("/add/learning")
-    public ResponseEntity<?> addLearningContent(Authentication auth,@RequestParam("image") MultipartFile a, @RequestBody LearningContentDTO dto) throws IOException {
-            postService.addLearningContent(auth.getName(),a, dto);
+    public ResponseEntity<?> addLearningContent(Authentication auth,@RequestParam("image") MultipartFile a, @RequestPart("content") String content, @RequestParam("isFree") Boolean isFree) throws IOException {
+            postService.addLearningContent(auth.getName(),a, content, isFree);
         return   ResponseEntity.status(200).body(new ApiResponse("Learning content added :)"));
 
     }
 
 
     @PutMapping("/update/work/{postId}")
-    public ResponseEntity<?> updateWorkPost(@PathVariable Integer postId, @RequestBody WorkPostDTO dto) {
-        postService.updateWorkPost(postId, dto);
+    public ResponseEntity<?> updateWorkPost(Authentication auth,@PathVariable Integer postId, @RequestBody WorkPostDTO dto) {
+        postService.updateWorkPost(auth.getName(), postId, dto);
         return ResponseEntity.status(200).body(new ApiResponse("Work updated!"));
 
     }
 
     @PutMapping("/update/learning/{postId}")
-    public ResponseEntity<?> updateLearningContent(@PathVariable Integer postId, @RequestBody LearningContentDTO dto) {
-        postService.updateLearningCont(postId, dto);
+    public ResponseEntity<?> updateLearningContent(Authentication auth, @PathVariable Integer postId, @RequestBody LearningContentDTO dto) {
+        postService.updateLearningCont(auth.getName(), postId, dto);
         return ResponseEntity.status(200).body(new ApiResponse("Learning content updated!"));
 
     }
 
     @DeleteMapping("/delete/{postId}")
-    public ResponseEntity<?> deletePost(@PathVariable Integer postId) {
-        postService.deletePost(postId);
+    public ResponseEntity<?> deletePost(Authentication auth, @PathVariable Integer postId) {
+        postService.deletePost(auth.getName(), postId);
         return ResponseEntity.status(200).body(new ApiResponse("post removed"));
 
     }
 
 
     @PutMapping("/public/{postId}")
-    public ResponseEntity<?> makePublic(@PathVariable Integer postId) {
-        postService.changeVisibilityToPublic(postId);
+    public ResponseEntity<?> makePublic(Authentication auth,@PathVariable Integer postId) {
+        postService.changeVisibilityToPublic(auth.getName(),postId);
         return ResponseEntity.status(200).body(new ApiResponse("Work Visibility switched"));
     }
 
     @PutMapping("/private/{postId}")
-    public ResponseEntity<?> makePrivate(@PathVariable Integer postId) {
-        postService.changeVisibilityToPrivate(postId);
+    public ResponseEntity<?> makePrivate(Authentication auth, @PathVariable Integer postId) {
+        postService.changeVisibilityToPrivate(auth.getName(), postId);
         return ResponseEntity.status(200).body(new ApiResponse("Work Visibility switched"));
-
     }
 
 
     @GetMapping("/review/{post_id}")
-    public ResponseEntity<?> reviewMyWork(@PathVariable Integer post_id) {
-        return ResponseEntity.status(200).body(new ApiResponse(postService.reviewMyWork(post_id)));
+    public ResponseEntity<?> reviewMyWork(Authentication auth,@PathVariable Integer post_id) {
+        return ResponseEntity.status(200).body(new ApiResponse(postService.reviewMyWork(auth.getName(), post_id)));
     }
 
     @PutMapping("/improve-attachment/{post_id}")
