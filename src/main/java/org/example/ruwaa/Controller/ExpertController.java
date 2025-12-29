@@ -53,4 +53,28 @@ public class ExpertController
     public ResponseEntity<?> subscriptionEarning(@PathVariable Double earningMonth, @PathVariable Integer views){
     return ResponseEntity.status(200).body(new ApiResponse(expertService.subscriptionEarning(earningMonth,views)));
     }
+
+    @PutMapping("/activate")
+    public ResponseEntity<?> activateExp(@PathVariable Integer expert){
+        expertService.activateExpert(expert);
+        return ResponseEntity.status(200).body(new ApiResponse("activate complete"));
+    }
+    @DeleteMapping("/reject")
+    public ResponseEntity<?> rejectExp(@PathVariable Integer expert){
+        expertService.rejectExpert(expert);
+        return ResponseEntity.status(200).body(new ApiResponse("reject complete, email sent"));
+    }
+
+    @PutMapping("/available")
+    public ResponseEntity<?> setStatAvailable(Authentication auth){
+        expertService.setAvailable(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("Status set to available"));
+
+    }
+    @PutMapping("/busy")
+    public ResponseEntity<?> setStatBusy(Authentication auth){
+        expertService.setBusy(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("Status set to busy"));
+
+    }
 }
