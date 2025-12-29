@@ -1,7 +1,6 @@
 package org.example.ruwaa.Controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Model.Message;
 import org.example.ruwaa.Service.MessageService;
@@ -18,7 +17,7 @@ public class MessageController
 
     @PostMapping("/send/{chat_id}")
     public ResponseEntity<?> sendMessage(@PathVariable Integer chat_id, @RequestBody Message message, Authentication auth){
-        messageService.send(auth.getName(),chat_id,message);
+        messageService.send(auth.getName(), chat_id,message);
         return ResponseEntity.status(200).body(new ApiResponse("message sent successfully"));
     }
 

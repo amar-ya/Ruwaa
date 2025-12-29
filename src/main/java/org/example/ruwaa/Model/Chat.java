@@ -1,5 +1,6 @@
 package org.example.ruwaa.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,6 @@ public class Chat
     private List<Message> messages;
 
     @OneToOne
-    @MapsId
-    private Review reviewChat;
+    @JsonIgnore
+    private Review review;
 }

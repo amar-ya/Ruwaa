@@ -37,10 +37,7 @@ public class Review
     @JsonIgnore
     private Post post;
 
-    @OneToOne(cascade = CascadeType.ALL,mappedBy = "reviewChat")
-    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "review")
     @JsonIgnore
     private Chat chat;
-
-
 }

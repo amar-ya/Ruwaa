@@ -65,13 +65,13 @@ public class ReviewController
     }
 
 
-    @PostMapping("/reject-review/{review_id}")
+    @PutMapping("/reject-review/{review_id}")
     public ResponseEntity<?> rejectReview (Authentication auth, @PathVariable Integer review_id, @RequestBody String reason) {
         reviewService.rejectReview(auth.getName(), review_id,reason);
         return ResponseEntity.status(200).body(new ApiResponse("review rejected successfully"));
     }
 
-    @PostMapping("/reject-all-reviews")
+    @PutMapping("/reject-all-reviews")
     public ResponseEntity<?> rejectAllReviews (Authentication auth) {
         reviewService.rejectAll(auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("All reviews rejected successfully"));

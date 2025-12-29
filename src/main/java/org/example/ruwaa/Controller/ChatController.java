@@ -38,4 +38,11 @@ public class ChatController
         return ResponseEntity.status(200).body(new ApiResponse("chat closed successfully"));
     }
 
+    @PostMapping("/open/{review_id}")
+    public ResponseEntity<?> open(@PathVariable Integer review_id, Authentication auth){
+        chatService.openChat(review_id, auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("chat opened successfully"));
+
+    }
+
 }

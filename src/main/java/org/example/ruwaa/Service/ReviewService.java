@@ -26,6 +26,8 @@ public class ReviewService
     private final CustomerRepository customerRepository;
     private final SendMailService sendMailService;
     private final AiService aiService;
+    private final CardsRepository cardsRepository;
+    private final MessageRepository messageRepository;
 
 
     public List<Review> getAll(){
@@ -117,8 +119,9 @@ public class ReviewService
 
         Post p = mediaRepository.findPostById(workId).orElseThrow(() -> new ApiException("work not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
-        if (p.getUsers().getCards() == null){
-            throw new ApiException("add a card first to pay");
+        List<Card> c = cardsRepository.findCardsByUserId(p.getUsers().getId());
+        if (c.isEmpty()){
+            throw new ApiException("add a card first to order review");
         }
         Subscription s = p.getUsers().getCustomer().getSubscription();
         if(s == null || s.getEnd_date().isBefore(LocalDateTime.now())){
@@ -149,23 +152,22 @@ public class ReviewService
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()-> new ApiException("review not found"));
         Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         if(!expert.getRole().equals("EXPERT")) throw new ApiException("unAuthorized writing review");
+
         Expert reviewer = reviewRepository.findExpertByReviewId(reviewId).orElseThrow(()-> new ApiException("expert of review not found"));
         if (expert != reviewer.getUsers()) {
             throw new ApiException("this review doesnt belong to you");
         }
         Expert expert1 = expertRepository.findExpertByUsername(username).orElseThrow(() -> new ApiException("expert not found"));
 
-        //
-        // if(!review.getStatus().equals("Accepted")) throw new ApiException("you need to accept review first");
-
+        if (!review.getStatus().equals("Accepted")){
+            throw new ApiException("review not accepted yet");
+        }
         review.setContent(reviewDTO.getContent());
         review.setStatus("Completed"); //***********CHECK REGEX
 
 
-//        Chat chat = new Chat(null,true,new ArrayList<>(),review);
-//        review.setChat(chat);
-//        chatRepository.save(chat);
-        reviewRepository.save(review);
+
+
 
         Double credit = expert.getExpert().getConsult_price();
 
@@ -200,13 +202,13 @@ public class ReviewService
         if (review.getStatus().equals("Completed")) {
             throw new ApiException("this review is already completed");
         }
-        if (reason != (null) || reason.equals("")) {
+        if (reason != null || !reason.equals("") ) {
             String message = "Dear "+review.getPost().getUsers().getName()+"\n\n the request to review your post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName()+" for the following reason: "+reason;
             sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
-        }else {
-            String message = "Dear "+review.getPost().getUsers().getName()+"\n\n the request to review your post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName();
-            sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
         }
+        String message = "Dear "+review.getPost().getUsers().getName()+"\n\n the request to review your post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName();
+        sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
+
         review.setStatus("Rejected");
         reviewRepository.save(review);
     }

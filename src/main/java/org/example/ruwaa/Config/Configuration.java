@@ -32,14 +32,16 @@ public class Configuration
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/admin",
                                 "/api/v1/payment/thanks",
-                                "/api/v1/category/get",
-                                "/api/v1/category/get/{name}",
                                 "/api/v1/chat/create",
                                 "/api/v1/message/display-chat/{chat_id}",
                                 "/api/v1/message/send/{chat_id}",
                                 "/api/v1/post/view/learning/{postId}",
                                 "/api/v1/post/free-feed",
-                                "/api/v1/post/work-feed").permitAll()
+                                "/api/v1/post/work-feed",
+                                "/api/v1/card/**").permitAll()
+
+                        .requestMatchers("/api/v1/category/get",
+                                "/api/v1/category/get/{name}").hasAnyAuthority("ADMIN", "CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/review/finished",
                                 "/api/v1/review//unfinished",
@@ -66,7 +68,8 @@ public class Configuration
                                 "/api/v1/post/improve-attachment/{post_id}",
                                 "/api/v1/expert/get-expert-by-category/{category}",
                                 "/api/v1/expert/get-high-rated-by-category/{category}",
-                                "/api/v1/review/get-send-requests").hasAuthority("CUSTOMER")
+                                "/api/v1/review/get-send-requests",
+                                "/api/v1/chat/open/{review_id}").hasAuthority("CUSTOMER")
 
                         .requestMatchers("/api/v1/auth/me",
                                 "/api/v1/auth/me",
@@ -74,13 +77,16 @@ public class Configuration
                                 "/api/v1/auth/update-expert",
                                 "/api/v1/chat/close/{id}",
                                 "/api/v1/expert/most-active/category/{category}",
-                                "/api/v1/post/subscription-feed").hasAnyAuthority("CUSTOMER", "EXPERT")
+                                "/api/v1/post/subscription-feed",
+                                "/api/v1/message/send/{chat_id}",
+                                "/api/v1/message/display-chat/{chat_id}").hasAnyAuthority("CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/category/create",
                                 "/api/v1/category/update/{id}",
                                 "/api/v1/category/delete/{id}",
                                 "/api/v1/chat/get",
-                                "/api/v1/customer/get","/api/v1/expert/subscription-earning/**").hasAuthority("ADMIN")
+                                "/api/v1/customer/get",
+                                "/api/v1/expert/subscription-earning/**").hasAuthority("ADMIN")
 
 
                         .anyRequest().authenticated())
