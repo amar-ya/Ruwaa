@@ -78,13 +78,16 @@ public class AuthService  {
 
         Expert e = new Expert();
         e.setLinkedin_url(auth.getLinkedin_url());
-        e.setIsActive(true);
+        e.setIsActive(false);
+        e.setIsAvailable(false);
         e.setCategory(c);
-        e.setConsult_price(auth.getAmount());
+        e.setLinkedin_url(auth.getLinkedin_url());
+        e.setConsult_price(auth.getConsult_price());
         e.setUsers(u);
         e.setCount_rating(0.0);
         e.setTotal_rating(0.0);
         e.setReview_count(0);
+        if(auth.getData()!=null) e.setData(auth.getData());
 
         expertRepository.save(e);
         return new AuthResponse(jwtUtil.generateToken(u), u.getUsername(), u.getRole());

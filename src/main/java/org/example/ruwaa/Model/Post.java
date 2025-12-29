@@ -39,7 +39,8 @@ public class Post
 
     //new
     @ManyToMany(mappedBy = "requestedPrivateWorks")
-    private Set<Users> permitWorkVisiablity;
+    @JsonIgnore
+    private List<Users> permitWorkVisiablity;
 
 
     @ManyToOne

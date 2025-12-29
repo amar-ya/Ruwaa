@@ -43,7 +43,7 @@ public class Configuration
 
 
                         .requestMatchers("/api/v1/review/finished",
-                                "/api/v1/review//unfinished",
+                                "/api/v1/review/unfinished",
                                 "/api/v1/post/add/learning",
                                 "/api/v1/review/reject-review/{review_id}",
                                 "/api/v1/review/submit/{reviewId}",

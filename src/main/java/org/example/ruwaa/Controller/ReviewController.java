@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.DTOs.ReviewDTO;
@@ -30,18 +31,18 @@ public class ReviewController
     @PutMapping("/rate/{reviewId}/{rate}")
     public ResponseEntity<?> rateReview(@PathVariable Integer reviewId,@PathVariable Integer rate) {
         reviewService.rateReview(reviewId, rate);
-        return ResponseEntity.status(200).body("Review rated to "+rate+" successfully");
+        return ResponseEntity.status(200).body(new ApiResponse("Review rated to "+rate+" successfully"));
     }
 
 
     @PostMapping("/request/{expertId}/{workId}")
     public ResponseEntity<?> requestReview(Authentication auth, @PathVariable Integer expertId,@PathVariable Integer workId) {
         reviewService.requestReview(auth.getName(), expertId, workId);
-        return ResponseEntity.status(200).body("Review request sent successfully");
+        return ResponseEntity.status(200).body(new ApiResponse("Review request sent successfully"));
     }
 
     @PutMapping("/submit/{reviewId}")
-    public ResponseEntity<?> submitReview(@PathVariable Integer reviewId,Authentication auth,@RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<?> submitReview(@PathVariable Integer reviewId,Authentication auth,@RequestBody @Valid ReviewDTO reviewDTO) {
         reviewService.submitReview(reviewId, auth.getName(), reviewDTO);
         return ResponseEntity.status(200).body(new ApiResponse("Review submitted successfully"));
     }

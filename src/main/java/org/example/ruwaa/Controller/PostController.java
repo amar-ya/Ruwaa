@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.DTOs.LearningContentDTO;

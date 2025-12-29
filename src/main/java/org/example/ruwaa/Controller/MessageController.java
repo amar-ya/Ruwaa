@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Model.Message;
@@ -16,7 +17,7 @@ public class MessageController
     private final MessageService messageService;
 
     @PostMapping("/send/{chat_id}")
-    public ResponseEntity<?> sendMessage(@PathVariable Integer chat_id, @RequestBody Message message, Authentication auth){
+    public ResponseEntity<?> sendMessage(@PathVariable Integer chat_id, @RequestBody @Valid Message message, Authentication auth){
         messageService.send(auth.getName(), chat_id,message);
         return ResponseEntity.status(200).body(new ApiResponse("message sent successfully"));
     }

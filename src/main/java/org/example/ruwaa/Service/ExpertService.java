@@ -76,20 +76,17 @@ public class ExpertService
 
 
 
-    public void applyDiscount(String username, Double discountPercentage, LocalDate date) {
+    public void applyDiscount(String username, Double discountPercentage,Integer days) {
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Expert expert = expertRepository.findExpertById(user.getId()).orElseThrow(() -> new ApiException("Expert not found"));
 
-        if(date.isBefore(LocalDate.now())) throw new ApiException("invalid date");
-
+        if(days<1) throw new ApiException("invalid date");
+        if(discountPercentage>expert.getConsult_price()) throw new ApiException("Invalid discount!");
         Double originalPrice = expert.getConsult_price();
         double newPrice = originalPrice * (1 - discountPercentage / 100);
         expert.setConsult_price(newPrice);
         expertRepository.save(expert);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime end = date.atStartOfDay();
-        long days = Duration.between(now, end).toDays();
 
         scheduler.schedule(() -> {
             Expert e = expertRepository.findExpertById(expert.getId()).orElse(null);
@@ -154,6 +151,7 @@ public class ExpertService
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(()-> new ApiException("expert not found"));
         if(expert.getIsActive()) throw new ApiException("this expert is already active");
         expert.setIsActive(true);
+        expert.setIsAvailable(true);
         expertRepository.save(expert);
     }
 
