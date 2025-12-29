@@ -38,10 +38,10 @@ public class Configuration
                                 "/api/v1/post/view/learning/{postId}",
                                 "/api/v1/post/free-feed",
                                 "/api/v1/post/work-feed",
-                                "/api/v1/card/**").permitAll()
+                                "/api/v1/card/**",
+                                "/api/v1/category/get",
+                                "/api/v1/category/get/{name}").permitAll()
 
-                        .requestMatchers("/api/v1/category/get",
-                                "/api/v1/category/get/{name}").hasAnyAuthority("ADMIN", "CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/review/finished",
                                 "/api/v1/review//unfinished",
@@ -71,12 +71,13 @@ public class Configuration
                                 "/api/v1/review/get-send-requests",
                                 "/api/v1/chat/open/{review_id}",
                                 "/api/v1/review/get-send-requests"
-                                ,"/api/v1/expert/available","/api/v1/expert/busy",//.hasAuthority("CUSTOMER")
-
-
-                       // ).hasAuthority("CUSTOMER")
+                                ,"/api/v1/expert/available","/api/v1/expert/busy",
                                 "/api/v1/review/get-send-requests",
                                 "/api/v1/review/get-completed-reviews/{postId}").hasAuthority("CUSTOMER")
+
+
+
+
 
                         .requestMatchers("/api/v1/auth/me",
                                 "/api/v1/auth/me",
@@ -93,11 +94,10 @@ public class Configuration
                                 "/api/v1/category/delete/{id}",
                                 "/api/v1/chat/get",
                                 "/api/v1/customer/get","/api/v1/expert/subscription-earning/**"
-                               ,"/api/v1/expert/activate/**","/api/v1/expert/reject/**"
+                               ,"/api/v1/expert/activate","/api/v1/expert/reject"
                                 ,"/api/v1/auth/get-all","/api/v1/expert/get-all",
                                          "/api/v1/customer/get",
                                           "/api/v1/expert/subscription-earning/**"
-                                //,"/api/v1/expert/activate/**"
                         ).hasAuthority("ADMIN")
 
 
