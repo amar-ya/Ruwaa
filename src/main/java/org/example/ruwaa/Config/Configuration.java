@@ -35,7 +35,6 @@ public class Configuration
                                 "/api/v1/chat/create",
                                 "/api/v1/message/display-chat/{chat_id}",
                                 "/api/v1/message/send/{chat_id}",
-                                "/api/v1/post/view/learning/{postId}",
                                 "/api/v1/post/free-feed",
                                 "/api/v1/post/work-feed",
                                 "/api/v1/card/**",
@@ -52,7 +51,8 @@ public class Configuration
                                 "/api/v1/review/get-reviews-requests",
                                 "/api/v1/review/accept-review/{reviewId}",
                                 "/api/v1/review/reject-all-reviews",
-                                "/api/v1/review/get-pending-review").hasAuthority("EXPERT")
+                                "/api/v1/review/get-pending-review",
+                                "/api/v1/post/update/learning/{postId}").hasAuthority("EXPERT")
 
                         .requestMatchers("/api/v1/expert/most-active/category/{category}",
                                 "/api/v1/expert/get-high-rated-by-category/{category}",
@@ -63,8 +63,6 @@ public class Configuration
                                 "/api/v1/subscription/subscribe/6month",
                                 "/api/v1/card/add",
                                 "/api/v1/post/add/work",
-                                "/api/v1/post/my-posts",
-                                "/api/v1/post/view/learning/{post_id}",
                                 "/api/v1/post/improve-attachment/{post_id}",
                                 "/api/v1/expert/get-expert-by-category/{category}",
                                 "/api/v1/expert/get-high-rated-by-category/{category}",
@@ -73,21 +71,28 @@ public class Configuration
                                 "/api/v1/review/get-send-requests"
                                 ,"/api/v1/expert/available","/api/v1/expert/busy",
                                 "/api/v1/review/get-send-requests",
-                                "/api/v1/review/get-completed-reviews/{postId}").hasAuthority("CUSTOMER")
+                                "/api/v1/review/get-completed-reviews/{postId}",
+                                "/api/v1/post/update/work/{postId}",
+                                "/api/v1/post/review/{post_id}").hasAuthority("CUSTOMER")
 
 
 
 
 
                         .requestMatchers("/api/v1/auth/me",
+                                "/api/v1/post/my-posts",
                                 "/api/v1/auth/me",
+                                "/api/v1/post/view/learning/{post_id}",
                                 "/api/v1/auth/update-customer",
                                 "/api/v1/auth/update-expert",
                                 "/api/v1/chat/close/{id}",
                                 "/api/v1/expert/most-active/category/{category}",
                                 "/api/v1/post/subscription-feed",
                                 "/api/v1/message/send/{chat_id}",
-                                "/api/v1/message/display-chat/{chat_id}").hasAnyAuthority("CUSTOMER", "EXPERT")
+                                "/api/v1/message/display-chat/{chat_id}",
+                                "/api/v1/post/delete/{postId}",
+                                "/api/v1/post/public/{postId}",
+                                "/api/v1/post/private/{postId}").hasAnyAuthority("CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/category/create",
                                 "/api/v1/category/update/{id}",
@@ -97,7 +102,8 @@ public class Configuration
                                ,"/api/v1/expert/activate","/api/v1/expert/reject"
                                 ,"/api/v1/auth/get-all","/api/v1/expert/get-all",
                                          "/api/v1/customer/get",
-                                          "/api/v1/expert/subscription-earning/**"
+                                          "/api/v1/expert/subscription-earning/**",
+                                "/api/v1/post/get-all"
                         ).hasAuthority("ADMIN")
 
 

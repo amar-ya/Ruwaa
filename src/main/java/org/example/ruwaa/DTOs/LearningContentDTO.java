@@ -19,10 +19,7 @@ public class LearningContentDTO {
     @NotNull
     private Boolean isFree;
 
-    @Size(max = 4,message = "maximum attachments is 4")
-    private List<Attachments> attachments;
-    @NotEmpty(message = "enter category")
-    @Size(min = 4)
-    private String category;
+    private Attachments attachments;
+
 
 }

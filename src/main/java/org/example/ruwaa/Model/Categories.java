@@ -20,7 +20,7 @@ public class Categories
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min = 4,message = "minimum length is 4")
+    //@Size(min = 4,message = "minimum length is 4")
     @Column(columnDefinition = "varchar(30) unique not null")
     private String name;
 
