@@ -17,11 +17,15 @@ import java.time.LocalDate;
 public class ExpertController
 {
     private final ExpertService expertService;
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.status(200).body(expertService.getAll());
+    }
 
     @GetMapping("/most-active/category/{category}")
-    public ResponseEntity<?> findMostActiveExpertByCategory(@PathVariable String category)
+    public ResponseEntity<?> findMostActiveExpertByCategory(Authentication auth, @PathVariable String category)
     {
-        return ResponseEntity.status(200).body(expertService.findMostActiveExpertByCategory(category));
+        return ResponseEntity.status(200).body(expertService.findMostActiveExpertByCategory(auth.getName(), category));
     }
 
 
@@ -29,6 +33,7 @@ public class ExpertController
     public ResponseEntity<?> getExpertByCategory (Authentication auth, @PathVariable String category) {
         return ResponseEntity.status(200).body(expertService.getExpertByCategory(auth.getName(), category));
     }
+
 
     @PostMapping("/discount/{discountPercentage}/{date}")
     public ResponseEntity<?> applyDiscount(Authentication auth, @PathVariable Double discountPercentage, @PathVariable LocalDate date) {
@@ -45,12 +50,37 @@ public class ExpertController
 
 
     @GetMapping("/calculate-average/{someExpert}")
-    public ResponseEntity<?> getExpertRateAverage(@PathVariable Integer someExpert){
-    return ResponseEntity.status(200).body(expertService.getExpertRateAverage(someExpert));
+    public ResponseEntity<?> getExpertRateAverage(Authentication auth, @PathVariable Integer someExpert){
+    return ResponseEntity.status(200).body(expertService.getExpertRateAverage(auth.getName(), someExpert));
     }
+
 
     @PutMapping("/subscription-earning/{earningMonth}/{views}")
     public ResponseEntity<?> subscriptionEarning(@PathVariable Double earningMonth, @PathVariable Integer views){
     return ResponseEntity.status(200).body(new ApiResponse(expertService.subscriptionEarning(earningMonth,views)));
+    }
+
+    @PutMapping("/activate/{expert}")
+    public ResponseEntity<?> activateExp(@PathVariable Integer expert){
+        expertService.activateExpert(expert);
+        return ResponseEntity.status(200).body(new ApiResponse("activate complete"));
+    }
+    @DeleteMapping("/reject/{expert}")
+    public ResponseEntity<?> rejectExp(@PathVariable Integer expert){
+        expertService.rejectExpert(expert);
+        return ResponseEntity.status(200).body(new ApiResponse("reject complete, email sent"));
+    }
+
+    @PutMapping("/available")
+    public ResponseEntity<?> setStatAvailable(Authentication auth){
+        expertService.setAvailable(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("Status set to available"));
+
+    }
+    @PutMapping("/busy")
+    public ResponseEntity<?> setStatBusy(Authentication auth){
+        expertService.setBusy(auth.getName());
+        return ResponseEntity.status(200).body(new ApiResponse("Status set to busy"));
+
     }
 }
