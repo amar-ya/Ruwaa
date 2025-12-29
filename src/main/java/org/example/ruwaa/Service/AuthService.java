@@ -40,6 +40,7 @@ public class AuthService  {
         admin.setRole("ADMIN");
         admin.setCreatedAt(LocalDateTime.now());
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setBalance(0.0);
         usersRepository.save(admin);
         String token = jwtUtil.generateToken(admin);
         return new AuthResponse(token, admin.getUsername(), admin.getRole());
