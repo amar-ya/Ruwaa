@@ -60,7 +60,9 @@ public class ReviewService
         reviewRepository.delete(r);
     }
 
-    public List<Review> getFinishedReviews(){
+    public List<Review> getFinishedReviews(String username){
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
+
         List<Review> r = reviewRepository.findFinishedReviews();
         if (r.isEmpty()){
             throw new ApiException("there are no finished reviews");
@@ -68,7 +70,9 @@ public class ReviewService
         return r;
     }
 
-    public List<Review> getUnfinishedReviews(){
+    public List<Review> getUnfinishedReviews(String username){
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
+
         List<Review> r = reviewRepository.findUnfinishedReviews();
         if (r.isEmpty()){
             throw new ApiException("there are no unfinished reviews");
@@ -76,26 +80,11 @@ public class ReviewService
         return r;
     }
 
-//    public void requestReview(Integer postId, Integer expertId) {
-//
-//        Post post = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
-//
-//        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
-//
-//
-//        Review review = new Review();
-//        review.setStatus("Pending");
-//        review.setExpert(expert);
-//        review.setPost(post);
-//        reviewRepository.save(review);
-//    }
-
-
 
     public void rateReview(Integer reviewId,Integer rate){
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()-> new ApiException("review not found"));
         if(review.getHasRated()) throw new ApiException("you have rated this review before");
-        if(rate>5||rate<1) throw new ApiException("invalid rate number");
+        if(rate>5||rate<1) throw new ApiException("Rate number should be between 1 and 5");
         review.setHasRated(true);
         review.setRate(rate);
         reviewRepository.save(review);
@@ -103,17 +92,17 @@ public class ReviewService
         Expert expert = review.getExpert();
 
         //I need variable names
-    expert.setTotal_rating(expert.getTotal_rating()+rate);
-    expert.setCount_rating(expert.getCount_rating()+1);
-//    expert.setReviewRate(expert.getSUM()/expert.getCounter());
+        expert.setTotal_rating(expert.getTotal_rating()+rate);
+        expert.setCount_rating(expert.getCount_rating()+1);
+        //expert.setReviewRate(expert.getSUM()/expert.getCounter());
 
         expertRepository.save(expert);
 
     }
 
 
-    public void requestReview(Integer expert_id,Integer workId){
-
+    public void requestReview(String username, Integer expert_id,Integer workId){
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
         if(!e.getIsActive()) throw new ApiException("expert account not activated yet");
         if(!e.getIsAvailable()) throw new ApiException("expert is busy");
@@ -138,7 +127,7 @@ public class ReviewService
         review.setHasRated(false);
         review.setPost(p);
         review.setExpert(e);
-        e.getReviews().add(review);
+//        e.getReviews().add(review);
         expertRepository.save(e);
         reviewRepository.save(review);
         //notify expert         **update link later for better UX
@@ -226,9 +215,9 @@ public class ReviewService
 
             if (review.getStatus().equals("Pending")) {
                 review.setStatus("Rejected");
+                reviewRepository.save(review);
             }
         }
-        reviewRepository.saveAll(reviews);
     }
 
 
@@ -267,6 +256,10 @@ public class ReviewService
             if (review.getPost().getUsers().getId().equals(customer.getId())){
                 customerRequests.add(review);
             }
+        }
+
+        if (customerRequests.isEmpty()) {
+            throw new ApiException("No send request found");
         }
         return customerRequests;
     }

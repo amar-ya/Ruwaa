@@ -50,10 +50,10 @@ public class Configuration
                                 "/api/v1/review/get-reviews-requests",
                                 "/api/v1/review/accept-review/{reviewId}",
                                 "/api/v1/review/reject-all-reviews",
-                                "/api/v1/review/get-pending-review",
-                                "/api/v1/review/get-completed-reviews/{postId}").hasAuthority("EXPERT")
+                                "/api/v1/review/get-pending-review").hasAuthority("EXPERT")
 
                         .requestMatchers("/api/v1/expert/most-active/category/{category}",
+                                "/api/v1/expert/get-high-rated-by-category/{category}",
                                 "/api/v1/post/create",
                                 "/api/v1/review/request-review/{postId}/{expertId}",
                                 "/api/v1/subscription/subscribe/month",
@@ -71,13 +71,14 @@ public class Configuration
 
 
                         ).hasAuthority("CUSTOMER")
+                                "/api/v1/review/get-send-requests",
+                                "/api/v1/review/get-completed-reviews/{postId}").hasAuthority("CUSTOMER")
 
                         .requestMatchers("/api/v1/auth/me",
                                 "/api/v1/auth/me",
                                 "/api/v1/auth/update-customer",
                                 "/api/v1/auth/update-expert",
                                 "/api/v1/chat/close/{id}",
-                                "/api/v1/expert/most-active/category/{category}",
                                 "/api/v1/post/subscription-feed").hasAnyAuthority("CUSTOMER", "EXPERT")
 
                         .requestMatchers("/api/v1/category/create",

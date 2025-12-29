@@ -54,14 +54,16 @@ public class ExpertService
         expertRepository.delete(e);
     }
 
-    public Expert findMostActiveExpertByCategory(String category){
+    public Expert findMostActiveExpertByCategory(String username, String category){
         return expertRepository.findMostActiveExpert(category).orElseThrow(() -> new ApiException("no experts added to this category"));
     }
 
 
     public List<Expert> getExpertByCategory (String username, String category) {
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
-        List<Expert> experts = expertRepository.findExpertByCategory(category);
+        Categories categories = categoriesRepository.findCategoryByName(category).orElseThrow(()-> new ApiException("user not found"));
+        List<Expert> experts = expertRepository.findExpertByCategory(categories);
+
         for (Expert e : experts) {
             e.setConsult_price(e.getConsult_price()+(e.getConsult_price()*0.2));
         }
@@ -99,7 +101,9 @@ public class ExpertService
 
     }
 
-    public Double getExpertRateAverage(Integer expertId){
+
+    public Double getExpertRateAverage(String username, Integer expertId){
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
 
         return expert.getTotal_rating()/expert.getCount_rating();
@@ -109,7 +113,7 @@ public class ExpertService
     public Expert getHighRatedExpertByCategory (String username, String category) {
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Categories categories = categoriesRepository.findCategoryByName(category).orElseThrow(() -> new ApiException("Category not found"));
-        List<Expert> experts = expertRepository.findExpertByCategory_Id(categories.getId());
+        List<Expert> experts = expertRepository.findExpertByCategory(categories);
         if (experts.isEmpty()) {
             throw new ApiException("No experts found for this category");
         }
@@ -118,11 +122,12 @@ public class ExpertService
         Expert expert = new Expert();
 
         for (Expert expert1 : experts) {
-            if (getExpertRateAverage(expert1.getId()) > high) {
-                high = getExpertRateAverage(expert1.getId());
+            if (getExpertRateAverage(username,expert1.getId()) >= high) {
+                high = getExpertRateAverage(username, expert1.getId());
                 expert = expert1;
             }
         }
+
         return  expert;
     }
 

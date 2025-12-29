@@ -17,21 +17,16 @@ public class ReviewController
 
 
     @GetMapping("/finished")
-    public ResponseEntity<?> getFinishedReviews(){
-        return ResponseEntity.status(200).body(reviewService.getFinishedReviews());
+    public ResponseEntity<?> getFinishedReviews(Authentication auth){
+        return ResponseEntity.status(200).body(reviewService.getFinishedReviews(auth.getName()));
     }
 
     @GetMapping("/unfinished")
-    public ResponseEntity<?> getUnfinishedReviews(){
-        return ResponseEntity.status(200).body(reviewService.getUnfinishedReviews());
+    public ResponseEntity<?> getUnfinishedReviews(Authentication auth){
+        return ResponseEntity.status(200).body(reviewService.getUnfinishedReviews(auth.getName()));
     }
-// *************************
-//    @PutMapping("/request-review/{postId}/{expertId}")
-//    public ResponseEntity<?> reviewMyWork (@PathVariable Integer postId, @PathVariable Integer expertId, Authentication auth) {
-//
-//        reviewService.requestReview(postId, expertId);
-//        return ResponseEntity.status(200).body(new ApiResponse("Request send successfully"));
-//    }
+
+
     @PutMapping("/rate/{reviewId}/{rate}")
     public ResponseEntity<?> rateReview(@PathVariable Integer reviewId,@PathVariable Integer rate) {
         reviewService.rateReview(reviewId, rate);
@@ -40,8 +35,8 @@ public class ReviewController
 
 
     @PostMapping("/request/{expertId}/{workId}")
-    public ResponseEntity<?> requestReview(@PathVariable Integer expertId,@PathVariable Integer workId) {
-        reviewService.requestReview(expertId, workId);
+    public ResponseEntity<?> requestReview(Authentication auth, @PathVariable Integer expertId,@PathVariable Integer workId) {
+        reviewService.requestReview(auth.getName(), expertId, workId);
         return ResponseEntity.status(200).body("Review request sent successfully");
     }
 
@@ -61,7 +56,7 @@ public class ReviewController
     @PutMapping("/accept-review/{reviewId}")
     public ResponseEntity<?> acceptReview (Authentication auth, @PathVariable Integer reviewId) {
         reviewService.acceptReview(auth.getName(), reviewId);
-        return ResponseEntity.status(200).body(new ApiResponse("review send successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("review accepted successfully"));
     }
 
 
