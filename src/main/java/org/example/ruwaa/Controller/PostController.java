@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.DTOs.LearningContentDTO;
@@ -65,7 +66,7 @@ public class PostController
     }
 
     @PostMapping("/add/work")
-    public ResponseEntity<?> addWorkPost(Authentication auth, @RequestBody WorkPostDTO dto) {
+    public ResponseEntity<?> addWorkPost(Authentication auth, @RequestBody @Valid WorkPostDTO dto) {
             postService.addWorkPost(auth.getName(), dto);
             return   ResponseEntity.status(200).body(new ApiResponse("Work added :) ask for reviews!"));
     }
@@ -79,14 +80,14 @@ public class PostController
 
 
     @PutMapping("/update/work/{postId}")
-    public ResponseEntity<?> updateWorkPost(@PathVariable Integer postId, @RequestBody WorkPostDTO dto) {
+    public ResponseEntity<?> updateWorkPost(@PathVariable Integer postId, @RequestBody @Valid WorkPostDTO dto) {
         postService.updateWorkPost(postId, dto);
         return ResponseEntity.status(200).body(new ApiResponse("Work updated!"));
 
     }
 
     @PutMapping("/update/learning/{postId}")
-    public ResponseEntity<?> updateLearningContent(@PathVariable Integer postId, @RequestBody LearningContentDTO dto) {
+    public ResponseEntity<?> updateLearningContent(@PathVariable Integer postId, @RequestBody @Valid LearningContentDTO dto) {
         postService.updateLearningCont(postId, dto);
         return ResponseEntity.status(200).body(new ApiResponse("Learning content updated!"));
 

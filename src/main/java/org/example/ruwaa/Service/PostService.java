@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -44,10 +45,10 @@ public class PostService
         Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
 
         String type = (dto.getIsPublic()) ? "public_work":"private_work";
-        HashSet<Users> permitPrivateWorkVisiablity;
+        List<Users> permitPrivateWorkVisiablity;
         if(dto.getIsPublic()) permitPrivateWorkVisiablity=null;
         else {
-            permitPrivateWorkVisiablity= new HashSet<Users>();
+            permitPrivateWorkVisiablity= new ArrayList<Users>();
             permitPrivateWorkVisiablity.add(u); //adding the current user so they can see their own work :)
         }
 
@@ -59,7 +60,10 @@ public class PostService
         p.setType(type);
         p.setViews(0);
         p.setPermitWorkVisiablity(permitPrivateWorkVisiablity);
+        u.getRequestedPrivateWorks().add(p);
         postRepository.save(p);
+        usersRepository.save(u);
+
 
     }
 

@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Model.Card;
 import org.example.ruwaa.Service.CardsService;
@@ -15,7 +16,7 @@ public class CardsController
     private final CardsService cardsService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCard(@RequestBody Card card, Authentication auth){
+    public ResponseEntity<?> addCard(@RequestBody @Valid Card card, Authentication auth){
         cardsService.addCard(card,auth.getName());
         return ResponseEntity.status(200).body("card added successfully");
     }

@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Model.Categories;
@@ -16,7 +17,7 @@ public class CategoriesController
     private final CategoriesService categoriesService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createCategory(@RequestBody Categories categories){
+    public ResponseEntity<?> createCategory(@RequestBody @Valid Categories categories){
         categoriesService.addCategory(categories);
         return ResponseEntity.status(200).body(new ApiResponse("category created"));
     }
@@ -32,7 +33,7 @@ public class CategoriesController
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody Categories categories){
+    public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody @Valid Categories categories){
         categoriesService.updateCategory(id, categories);
         return ResponseEntity.status(200).body(new ApiResponse("category updated"));
     }

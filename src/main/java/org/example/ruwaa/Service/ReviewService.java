@@ -88,7 +88,7 @@ public class ReviewService
         if(review.getHasRated()) throw new ApiException("you have rated this review before");
         if(rate>5||rate<1) throw new ApiException("Rate number should be between 1 and 5");
         review.setHasRated(true);
-        review.setRate(rate);
+        review.setFeedback_rating(rate);
         reviewRepository.save(review);
 
         Expert expert = review.getExpert();
@@ -126,16 +126,15 @@ public class ReviewService
         }
         Review review = new Review();
         review.setStatus("Pending"); ///****************Check regex
-        review.setRate(1);
+        review.setFeedback_rating(1);
         review.setHasRated(false);
         review.setPost(p);
         review.setExpert(e);
-//        e.getReviews().add(review);
         expertRepository.save(e);
         reviewRepository.save(review);
         //notify expert         **update link later for better UX
         String body = "a new review request worth "+e.getConsult_price()+"SR,\n\n" + //**** كم نخلي نسبة الربح حقتنا عشان نطرح
-                "View request link: \n\n" +
+                "View request link: localhost:8080/api/v1/post/view/work/"+p.getUsers().getId()+"\n\n" +
                 "Work content: "+p.getContent();
         sendMailService.sendMessage(e.getUsers().getEmail(),"New Review Request From "+p.getUsers().getName(),body);
     }
@@ -180,6 +179,7 @@ public class ReviewService
         if (expert != reviewer.getUsers()) {
             throw new ApiException("this review doesnt belong to you");
         }
+        if(review.getStatus().equals("Accepted")||review.getStatus().equals("Completed")) throw new ApiException("you accepted or submited this review already");
         review.setStatus("Accepted");
         reviewRepository.save(review);
     }
@@ -190,7 +190,7 @@ public class ReviewService
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
         Expert reviewer = reviewRepository.findExpertByReviewId(reviewId).orElseThrow(()-> new ApiException("expert of review not found"));
         if (expert != reviewer.getUsers()) {
-            throw new ApiException("this review doesnt belong to you");
+            throw new ApiException("this review doesn't belong to you");
         }
         if (review.getStatus().equals("Completed")) {
             throw new ApiException("this review is already completed");

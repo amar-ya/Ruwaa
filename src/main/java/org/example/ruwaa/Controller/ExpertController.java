@@ -35,10 +35,10 @@ public class ExpertController
     }
 
 
-    @PostMapping("/discount/{discountPercentage}/{date}")
-    public ResponseEntity<?> applyDiscount(Authentication auth, @PathVariable Double discountPercentage, @PathVariable LocalDate date) {
+    @PutMapping("/discount/{discountPercentage}/{days}")
+    public ResponseEntity<?> applyDiscount(Authentication auth, @PathVariable Double discountPercentage, @PathVariable Integer days) {
 
-        expertService.applyDiscount(auth.getName(), discountPercentage,date);
+        expertService.applyDiscount(auth.getName(), discountPercentage,days);
         return ResponseEntity.status(200).body(new ApiResponse("Discount applied successfully"));
     }
 

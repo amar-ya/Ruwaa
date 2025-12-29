@@ -1,5 +1,6 @@
 package org.example.ruwaa.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiResponse;
 import org.example.ruwaa.Model.Chat;
@@ -26,7 +27,7 @@ public class ChatController
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Chat chat){
+    public ResponseEntity<?> create(@RequestBody @Valid Chat chat){
 
         chatService.save(chat);
         return ResponseEntity.status(200).body(chat);

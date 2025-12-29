@@ -1,9 +1,6 @@
 package org.example.ruwaa.DTOs;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +17,7 @@ public class RegisterExpertRequest
     @Email
     @NotEmpty(message = "email is required")
     private String email;
+    @NotEmpty(message = "enter linkedin URL")
     private String linkedin_url;
     @NotEmpty(message = "enter phone number")
     @Size(min = 10,max = 10,message = "invalid phone number")
@@ -29,5 +27,11 @@ public class RegisterExpertRequest
     private String name;
     @NotEmpty(message = "category is required")
     private String category;
-    private Double amount;
+
+    @NotNull(message = "enter consultation price")
+    @PositiveOrZero(message = "must be positive or free")
+    private Double consult_price;
+
+    //optinal
+    private byte[] data;
 }

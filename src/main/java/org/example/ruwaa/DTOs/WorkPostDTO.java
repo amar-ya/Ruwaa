@@ -26,7 +26,7 @@ public class WorkPostDTO {
     private List<Attachments> attachments;
 
     @NotEmpty(message = "enter category")
-    @Size(min = 4)
+    //@Size(min = 4)
     private String category;
 
 }

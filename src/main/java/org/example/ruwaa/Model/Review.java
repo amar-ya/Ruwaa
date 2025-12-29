@@ -27,7 +27,6 @@ public class Review
     private String status;
 
     private Boolean hasRated;
-    private Integer rate;
 
     @ManyToOne
     @JsonIgnore
