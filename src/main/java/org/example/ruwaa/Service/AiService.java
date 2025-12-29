@@ -54,23 +54,21 @@ public class AiService {
 
 
     public String dtoPost(Post p){
-       WorkPostDTO dto = new WorkPostDTO(p.getContent(),true,p.getAttachments(),p.getCategory().getName());
+       WorkPostDTO dto = new WorkPostDTO(p.getContent(),true,p.getAttachment(),p.getCategory().getName());
 
         String dtoString = "Work Post Details: Content: "+
                 dto.getContent()+", possible category : "+dto.getCategory()+", Attachments: ";
 
-        if (dto.getAttachments() == null || dto.getAttachments().isEmpty()) {
+        if (dto.getAttachments() == null) {
            dtoString+= " none";
         } else {
 
-           for(Attachments a: dto.getAttachments()){
-               dtoString += "*"+a.getName()+"( "+
-                       a.getData()+")";
-           }
+            dtoString+= "*"+dto.getAttachments().getName()+"( "+
+                    dto.getAttachments().getData().toString()+")";
+
         }
         System.out.println(dtoString);
         return dtoString;
-//return "";
     }
 
 }

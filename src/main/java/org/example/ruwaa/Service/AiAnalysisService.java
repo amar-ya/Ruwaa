@@ -24,31 +24,31 @@ public class AiAnalysisService {
         List<Review> reviews = new ArrayList<>();
 
         for (Review review : all) {
-            if (review.getPost().getUsers().getId().equals(customerId)){
+            if (review.getPost().getUsers().getId().equals(customerId)) {
                 reviews.add(review);
             }
         }
+            if (reviews.isEmpty()) {
+                throw new ApiException("No reviews found for this customer");
+            }
 
-        if (reviews.isEmpty()) {
-            throw new ApiException("No reviews found for this customer");
+            String combinedReviews = reviews.stream()
+                    .map(Review::getContent)
+                    .collect(Collectors.joining("\n"));
+
+            String prompt = """
+                    Analyze the following reviews written for a user. 
+                    Extract the following in JSON format:
+                    - skills: list of skills mentioned
+                    - strengths: list of strengths
+                    - weaknesses: list of weaknesses
+                    - overall_rating: number from 1 to 5
+                    
+                    Reviews:
+                    %s
+                    """.formatted(combinedReviews);
+
+            return openAiService.analyzeText(prompt);
         }
-
-        String combinedReviews = reviews.stream()
-                .map(Review::getContent)
-                .collect(Collectors.joining("\n"));
-
-
-        String prompt = """
-                Analyze the following customer reviews and extract:
-                - Skills
-                - Strengths
-                - Weaknesses
-                - Overall rating from 1 to 5
-
-                Reviews:
-                %s
-                """.formatted(combinedReviews);
-
-        return openAiService.analyzeText(prompt);
     }
-}
+

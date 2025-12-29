@@ -26,27 +26,27 @@ public class PostService
     private final CustomerRepository customerRepository;
     private final AiService aiService;
     private final ExpertRepository expertRepository;
+    private final AttachmentsRepository attachmentsRepository;
 
 
     public List<Post> getAll(){
         List<Post> postList = postRepository.findAll();
         if (postList.isEmpty()){
-            throw new ApiException("expert not found");
+            throw new ApiException("no posts found");
         }
         return postList;
     }
 
 
 
-    public void addWorkPost(String username, WorkPostDTO dto){
-
+    public void addWorkPost(String username,MultipartFile attachement, String content, Boolean isPublic, String postCategory) throws IOException {
         Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         if(!u.getRole().equals("CUSTOMER")) throw new ApiException("only customers can add this content type");
-        Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
+        Categories category = categoriesRepository.findCategoryByName(postCategory).orElseThrow(() -> new ApiException("invalid category"));
 
-        String type = (dto.getIsPublic()) ? "public_work":"private_work";
+        String type = (isPublic) ? "public_work":"private_work";
         List<Users> permitPrivateWorkVisiablity;
-        if(dto.getIsPublic()) permitPrivateWorkVisiablity=null;
+        if(isPublic) permitPrivateWorkVisiablity=null;
         else {
             permitPrivateWorkVisiablity= new ArrayList<Users>();
             permitPrivateWorkVisiablity.add(u); //adding the current user so they can see their own work :)
@@ -56,55 +56,77 @@ public class PostService
         p.setPublishAt(LocalDateTime.now());
         p.setCategory(category);
         p.setUsers(u);
-        p.setContent(dto.getContent());
+        p.setContent(content);
         p.setType(type);
         p.setViews(0);
         p.setPermitWorkVisiablity(permitPrivateWorkVisiablity);
         u.getRequestedPrivateWorks().add(p);
         postRepository.save(p);
-        usersRepository.save(u);
-
-
+        Attachments a = new Attachments();
+        a.setPost(p);
+        a.setData(attachement.getBytes());
+        a.setName(attachement.getOriginalFilename());
+        a.setType(attachement.getContentType());
+        attachmentsRepository.save(a);
     }
 
 
-    public void addLearningContent(String username,MultipartFile image,LearningContentDTO dto) throws IOException {
+    public void addLearningContent(String username,MultipartFile image,String content, Boolean isFree) throws IOException {
         Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         if(!u.getRole().equals("EXPERT")) throw new ApiException("only expert can add this content type");
         Expert e = expertRepository.findExpertById(u.getId()).orElseThrow();
         if(!e.getIsActive()) throw new ApiException("expert account not activated yet");
-        Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
-        String type = (dto.getIsFree()) ? "free_content":"subscription_content";
+        String type = (isFree) ? "free_content":"subscription_content";
 
+
+        Post post = new Post();
+        post.setPublishAt(LocalDateTime.now());
+        post.setUsers(u);
+        post.setContent(content);
+        post.setType(type);
+        post.setViews(0);
+        post.setCategory(u.getExpert().getCategory());
+        postRepository.save(post);
         Attachments a = new Attachments();
+        a.setPost(post);
         a.setData(image.getBytes());
         a.setName(image.getOriginalFilename());
         a.setType(image.getContentType());
-        Post post = new Post(null,dto.getContent(),0,type,LocalDateTime.now(),null,u,null,dto.getAttachments(),category);
-        post.getAttachments().add(a);
-        postRepository.save(post);
+        attachmentsRepository.save(a);
+
+
+
     }
 
-    public void updateWorkPost(Integer id, WorkPostDTO dto){
+    public void updateWorkPost(String username, Integer id, WorkPostDTO dto){
+        Users u  = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post post = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
-
+        if (u != post.getUsers()){
+            throw new ApiException("only post author can update it");
+        }
         post.setContent(dto.getContent());
-        post.setAttachments(dto.getAttachments());
+        post.setAttachment(dto.getAttachments());
 
         postRepository.save(post);
     }
-    public void updateLearningCont(Integer id, LearningContentDTO dto)  {
+    public void updateLearningCont(String username, Integer id, LearningContentDTO dto)  {
+        Users u  = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post post = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
-
+        if (u != post.getUsers()){
+            throw new ApiException("only post author can update it");
+        }
         post.setContent(dto.getContent());
-        post.setAttachments(dto.getAttachments());
+        post.setAttachment(dto.getAttachments());
 
         postRepository.save(post);
     }
 
-    public void deletePost(Integer id){
+    public void deletePost(String username, Integer id){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post m = postRepository.findPostById(id).orElseThrow(() -> new ApiException("post not found"));
-
+        if (u != m.getUsers()){
+            throw new ApiException("only post author can remove it");
+        }
         postRepository.delete(m);
     }
 
@@ -177,8 +199,15 @@ public class PostService
     }
 
 
-    public String reviewMyWork(Integer postId){
+    public String reviewMyWork(String username, Integer postId){
+        Users u =  usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        if (u != p.getUsers()){
+            throw new ApiException("only post author can review it using AI");
+        }
+        if (u.getCustomer().getSubscription() == null || u.getCustomer().getSubscription().getEnd_date().isBefore(LocalDateTime.now()) && u.getExpert() == null){
+            throw new ApiException("this content needs subscription");
+        }
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
 
@@ -199,8 +228,12 @@ public class PostService
         return  aiService.askAI(dtoString);
     }
 
-    public void changeVisibilityToPublic(Integer postId){
+    public void changeVisibilityToPublic(String username, Integer postId){
+        Users u =  usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        if (u != p.getUsers()){
+            throw new ApiException("only the post`s author can change visibility");
+        }
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
         if(p.getType().equals("public_work")) throw new ApiException("this work is already Public");
 
@@ -210,11 +243,14 @@ public class PostService
     }
 
 
-    public void changeVisibilityToPrivate(Integer postId){
+    public void changeVisibilityToPrivate(String username, Integer postId){
+        Users u =  usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
         if(p.getType().equals("private_work")) throw new ApiException("this work is already Private");
-
+        if (u != p.getUsers()){
+            throw new ApiException("only the post`s author can change visibility");
+        }
         p.setType("private_work");
         postRepository.save(p);
 

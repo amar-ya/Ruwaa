@@ -51,8 +51,8 @@ public class Post
     @JsonIgnore
     private List<Review> reviews;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "post")
-    private List<Attachments> attachments;
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "post")
+    private Attachments attachment;
 
     @ManyToOne
     @JsonIgnore

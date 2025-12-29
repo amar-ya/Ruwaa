@@ -154,6 +154,7 @@ public class ExpertService
         expert.setIsAvailable(true);
         expertRepository.save(expert);
     }
+
     public void rejectExpert(Integer expertId){
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(()-> new ApiException("expert not found"));
         if(expert.getIsActive()) throw new ApiException("you can't reject active expert");
@@ -172,12 +173,15 @@ public class ExpertService
         usersRepository.delete(info);
     }
 
+
     public void setAvailable(String username){
         Expert expert = expertRepository.findExpertByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         if(expert.getIsAvailable()) throw new ApiException("status already available");
         expert.setIsAvailable(true);
         expertRepository.save(expert);
     }
+
+
     public void setBusy(String username){
         Expert expert = expertRepository.findExpertByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         if(!expert.getIsAvailable()) throw new ApiException("status already busy");
