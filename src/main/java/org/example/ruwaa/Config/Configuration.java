@@ -52,7 +52,9 @@ public class Configuration
                                 "/api/v1/review/accept-review/{reviewId}",
                                 "/api/v1/review/reject-all-reviews",
                                 "/api/v1/review/get-pending-review",
-                                "/api/v1/post/update/learning/{postId}").hasAuthority("EXPERT")
+                                "/api/v1/post/update/learning/{postId}",
+                                "/api/v1/expert/available").hasAuthority("EXPERT")
+                                
 
                         .requestMatchers("/api/v1/expert/most-active/category/{category}",
                                 "/api/v1/expert/get-high-rated-by-category/{category}",
