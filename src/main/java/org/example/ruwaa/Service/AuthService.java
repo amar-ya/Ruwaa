@@ -37,6 +37,7 @@ public class AuthService  {
         if (usersRepository.findUserByUsername(admin.getUsername()).isPresent()){
             throw new ApiException("username is already taken");
         }
+        admin.setAbout_me("Ruwaa team");
         admin.setRole("ADMIN");
         admin.setCreatedAt(LocalDateTime.now());
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
@@ -70,8 +71,11 @@ public class AuthService  {
         u.setPassword(passwordEncoder.encode(auth.getPassword()));
         u.setPhone(auth.getPhone_number());
         u.setCreatedAt(LocalDateTime.now());
+        u.setAbout_me("Hello I am new!");
         u.setBalance(0.0);
         u.setRole("EXPERT");
+        usersRepository.save(u);
+
         Expert e = new Expert();
         e.setLinkedin_url(auth.getLinkedin_url());
         e.setIsActive(true);
@@ -128,6 +132,7 @@ public class AuthService  {
         u.setUsername(auth.getUsername());
         u.setEmail(auth.getEmail());
         u.setName(auth.getName());
+        u.setAbout_me("Hello I am new!");
         u.setPassword(passwordEncoder.encode(auth.getPassword()));
         u.setCreatedAt(LocalDateTime.now());
         u.setRole("CUSTOMER");

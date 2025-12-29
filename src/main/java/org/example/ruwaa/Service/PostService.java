@@ -5,10 +5,7 @@ import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.DTOs.LearningContentDTO;
 import org.example.ruwaa.DTOs.WorkPostDTO;
 import org.example.ruwaa.Model.*;
-import org.example.ruwaa.Repository.CategoriesRepository;
-import org.example.ruwaa.Repository.CustomerRepository;
-import org.example.ruwaa.Repository.PostRepository;
-import org.example.ruwaa.Repository.UsersRepository;
+import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +24,7 @@ public class PostService
     private final UsersRepository usersRepository;
     private final CustomerRepository customerRepository;
     private final AiService aiService;
+    private final ExpertRepository expertRepository;
 
 
     public List<Post> getAll(){
@@ -69,7 +67,8 @@ public class PostService
     public void addLearningContent(String username,MultipartFile image,LearningContentDTO dto) throws IOException {
         Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         if(!u.getRole().equals("EXPERT")) throw new ApiException("only expert can add this content type");
-
+        Expert e = expertRepository.findExpertById(u.getId()).orElseThrow();
+        if(!e.getIsActive()) throw new ApiException("expert account not activated yet");
         Categories category = categoriesRepository.findCategoryByName(dto.getCategory()).orElseThrow(() -> new ApiException("invalid category"));
         String type = (dto.getIsFree()) ? "free_content":"subscription_content";
 

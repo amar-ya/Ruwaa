@@ -104,6 +104,9 @@ public class ReviewService
     public void requestReview(String username, Integer expert_id,Integer workId){
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
+        if(!e.getIsActive()) throw new ApiException("expert account not activated yet");
+        if(!e.getIsAvailable()) throw new ApiException("expert is busy");
+
 
         Post p = mediaRepository.findPostById(workId).orElseThrow(() -> new ApiException("work not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
