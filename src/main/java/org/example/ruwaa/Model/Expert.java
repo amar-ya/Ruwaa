@@ -45,7 +45,7 @@ public class Expert
     @JsonIgnore
     private Users users;
 
-    @OneToMany(mappedBy = "expert")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "expert")
     @JsonIgnore
     private Set<Review> reviews;
 

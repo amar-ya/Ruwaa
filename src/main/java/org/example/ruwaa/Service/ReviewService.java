@@ -149,6 +149,10 @@ public class ReviewService
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()-> new ApiException("review not found"));
         Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         if(!expert.getRole().equals("EXPERT")) throw new ApiException("unAuthorized writing review");
+        Expert reviewer = reviewRepository.findExpertByReviewId(reviewId).orElseThrow(()-> new ApiException("expert of review not found"));
+        if (expert != reviewer.getUsers()) {
+            throw new ApiException("this review doesnt belong to you");
+        }
         Expert expert1 = expertRepository.findExpertByUsername(username).orElseThrow(() -> new ApiException("expert not found"));
 
         //
@@ -177,9 +181,9 @@ public class ReviewService
     public void acceptReview ( String username, Integer reviewId) {
         Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
-
-        if (!expert.getId().equals(review.getExpert().getId())) {
-            throw new ApiException("This review doesn't belong to you");
+        Expert reviewer = reviewRepository.findExpertByReviewId(reviewId).orElseThrow(()-> new ApiException("expert of review not found"));
+        if (expert != reviewer.getUsers()) {
+            throw new ApiException("this review doesnt belong to you");
         }
         review.setStatus("Accepted");
         reviewRepository.save(review);
@@ -189,14 +193,20 @@ public class ReviewService
     public void rejectReview (String username, Integer reviewId,String reason) {
         Users expert = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Review review = reviewRepository.findReviewById(reviewId).orElseThrow(() -> new ApiException("review not found"));
-        System.out.println(review.getExpert());
-
-        if (!expert.getId().equals(review.getExpert().getId())) {
-            throw new ApiException("This review doesn't belong to you");
+        Expert reviewer = reviewRepository.findExpertByReviewId(reviewId).orElseThrow(()-> new ApiException("expert of review not found"));
+        if (expert != reviewer.getUsers()) {
+            throw new ApiException("this review doesnt belong to you");
         }
-
-        String message = "the request to review you post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName()+" for the following reason: "+reason;
-        sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
+        if (review.getStatus().equals("Completed")) {
+            throw new ApiException("this review is already completed");
+        }
+        if (reason != (null) || reason.equals("")) {
+            String message = "Dear "+review.getPost().getUsers().getName()+"\n\n the request to review your post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName()+" for the following reason: "+reason;
+            sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
+        }else {
+            String message = "Dear "+review.getPost().getUsers().getName()+"\n\n the request to review your post\n"+review.getPost().getContent()+ " \n were rejected by :"+expert.getName();
+            sendMailService.sendMessage(review.getPost().getUsers().getEmail(),"review rejected",message);
+        }
         review.setStatus("Rejected");
         reviewRepository.save(review);
     }
@@ -209,6 +219,7 @@ public class ReviewService
         List<Review> reviews = reviewRepository.findAllByExpert(expert);
 
         for (Review review : reviews) {
+
             if (review.getStatus().equals("Pending")) {
                 review.setStatus("Rejected");
             }
