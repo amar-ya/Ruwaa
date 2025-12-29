@@ -2,13 +2,8 @@ package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
-import org.example.ruwaa.Model.Expert;
-import org.example.ruwaa.Model.Post;
-import org.example.ruwaa.Model.Review;
-import org.example.ruwaa.Model.Users;
-import org.example.ruwaa.Repository.ExpertRepository;
-import org.example.ruwaa.Repository.PostRepository;
-import org.example.ruwaa.Repository.ReviewRepository;
+import org.example.ruwaa.Model.*;
+import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -28,6 +23,8 @@ public class ExpertService
     private final ExpertRepository expertRepository;
     private final ReviewRepository reviewRepository;
     private final PostRepository postRepository;
+    private final UsersRepository usersRepository;
+    private final CategoriesRepository categoriesRepository;
 
     public List<Expert> getAll(){
         List<Expert> experts = expertRepository.findAll();
@@ -61,13 +58,14 @@ public class ExpertService
     }
 
 
-    public List<Expert> getExpertByCategory (String category) {
+    public List<Expert> getExpertByCategory (String username, String category) {
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         List<Expert> experts = expertRepository.findExpertByCategory(category);
         for (Expert e : experts) {
             e.setConsult_price(e.getConsult_price()+(e.getConsult_price()*0.2));
         }
         if (experts.isEmpty()) {
-            throw new ApiException("No experts found");
+            throw new ApiException("No experts found for this category");
         }
 
         return experts;
@@ -75,22 +73,21 @@ public class ExpertService
 
 
 
-    public void applyDiscount(Integer expertId, Double discountPercentage, LocalDate date) {
-        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new ApiException("Expert not found"));
+    public void applyDiscount(String username, Double discountPercentage, LocalDate date) {
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
+        Expert expert = expertRepository.findExpertById(user.getId()).orElseThrow(() -> new ApiException("Expert not found"));
+
         if(date.isBefore(LocalDate.now())) throw new ApiException("invalid date");
 
         Double originalPrice = expert.getConsult_price();
-
         double newPrice = originalPrice * (1 - discountPercentage / 100);
         expert.setConsult_price(newPrice);
         expertRepository.save(expert);
 
-
         long days = ChronoUnit.DAYS.between(LocalDate.now(), date);
 
-
         scheduler.schedule(() -> {
-            Expert e = expertRepository.findById(expertId).orElse(null);
+            Expert e = expertRepository.findExpertById(expert.getId()).orElse(null);
             if (e != null) {
                 e.setConsult_price(originalPrice);
                 expertRepository.save(e);
@@ -103,6 +100,27 @@ public class ExpertService
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
 
         return expert.getTotal_rating()/expert.getCount_rating();
+    }
+
+
+    public Expert getHighRatedExpertByCategory (String username, String category) {
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
+        Categories categories = categoriesRepository.findCategoryByName(category).orElseThrow(() -> new ApiException("Category not found"));
+        List<Expert> experts = expertRepository.findExpertByCategory_Id(categories.getId());
+        if (experts.isEmpty()) {
+            throw new ApiException("No experts found for this category");
+        }
+
+        Double high = 0.0;
+        Expert expert = new Expert();
+
+        for (Expert expert1 : experts) {
+            if (getExpertRateAverage(expert1.getId()) > high) {
+                high = getExpertRateAverage(expert1.getId());
+                expert = expert1;
+            }
+        }
+        return  expert;
     }
 
 

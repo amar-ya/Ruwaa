@@ -241,8 +241,9 @@ public class ReviewService
     }
 
 
-    public List<Review> getReviewsRequest (Integer expertId) {
-        Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("Expert not found"));
+    public List<Review> getReviewsRequest (String username) {
+        Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
+        Expert expert = expertRepository.findExpertById(user.getId()).orElseThrow(() -> new ApiException("Expert not found"));
 
         List<Review> reviews = reviewRepository.findAllByExpert(expert);
         if (reviews.isEmpty()) {
@@ -253,7 +254,7 @@ public class ReviewService
 
 
     public List<Review> getSentRequests(String username) {
-        Customer customer = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("Customer not found"));
+        Users customer = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
 
         List<Review> customerRequests = new ArrayList<>();
         List<Review> all = reviewRepository.findAll();

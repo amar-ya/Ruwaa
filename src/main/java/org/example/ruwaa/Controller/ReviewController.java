@@ -59,7 +59,7 @@ public class ReviewController
 
 
     @PutMapping("/accept-review/{reviewId}")
-    public ResponseEntity<?> acceptReview (@PathVariable Integer reviewId, Authentication auth) {
+    public ResponseEntity<?> acceptReview (Authentication auth, @PathVariable Integer reviewId) {
         reviewService.acceptReview(auth.getName(), reviewId);
         return ResponseEntity.status(200).body(new ApiResponse("review send successfully"));
     }
@@ -71,7 +71,7 @@ public class ReviewController
         return ResponseEntity.status(200).body(new ApiResponse("review rejected successfully"));
     }
 
-    @PostMapping("/reject-all-reviews/")
+    @PostMapping("/reject-all-reviews")
     public ResponseEntity<?> rejectAllReviews (Authentication auth) {
         reviewService.rejectAll(auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("All reviews rejected successfully"));
@@ -84,13 +84,13 @@ public class ReviewController
     }
 
 
-    @GetMapping("/get-reviews-requests/{expertId}")
-    public ResponseEntity<?> getReviewsRequest (@PathVariable Integer expertId) {
-        return ResponseEntity.status(200).body(reviewService.getReviewsRequest(expertId));
+    @GetMapping("/get-reviews-requests")
+    public ResponseEntity<?> getReviewsRequest (Authentication auth) {
+        return ResponseEntity.status(200).body(reviewService.getReviewsRequest(auth.getName()));
     }
 
 
-    @GetMapping("/get-send-requests/")
+    @GetMapping("/get-send-requests")
     public ResponseEntity<?> getSendRequests (Authentication auth) {
         return ResponseEntity.status(200).body(reviewService.getSentRequests(auth.getName()));
     }
