@@ -22,9 +22,12 @@ public class Attachments
 
     private String type;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] data;
 
-    @ManyToOne
+    @OneToOne
     @JsonIgnore
     private Post post;
 }

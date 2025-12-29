@@ -25,4 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Integer>
     @Query("  SELECT p FROM Post p WHERE p.type = 'subscription_content' AND p.publishAt >= :fromDate AND p.views >= :minViews")
     List<Post> getRecentMonthLearningPosts(LocalDateTime fromDate, Integer minViews);
 
+    @Query("select p from Post p join p.users u where u.id = :id")
+    List<Post> getUserPosts(Integer id);
+
 }
