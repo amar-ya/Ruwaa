@@ -71,6 +71,9 @@ public class SubscriptionService
         }
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         paymentService.processPayment(15.0,gifer.getUsers().getCards().get(0));
+        if (gifer == c){
+            throw new ApiException("you cant gift subscription to your self");
+        }
         if(c.getSubscription() != null){
             c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(1));
             subscriptionRepository.save(c.getSubscription());
