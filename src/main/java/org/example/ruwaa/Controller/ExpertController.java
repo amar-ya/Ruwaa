@@ -51,7 +51,7 @@ public class ExpertController
 
     @GetMapping("/calculate-average/{someExpert}")
     public ResponseEntity<?> getExpertRateAverage(Authentication auth, @PathVariable Integer someExpert){
-    return ResponseEntity.status(200).body(expertService.getExpertRateAverage(auth.getName(), someExpert));
+    return ResponseEntity.status(200).body(new ApiResponse(""+(expertService.getExpertRateAverage(auth.getName(), someExpert))+"/5"));
     }
 
 

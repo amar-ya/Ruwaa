@@ -48,9 +48,9 @@ public class ReviewController
     }
 
 
-    @GetMapping("/template/{postId}")
-    public ResponseEntity<?> makeReviewTemplate(@PathVariable Integer postId) {
-        return ResponseEntity.status(200).body(new ApiResponse(reviewService.makeReviewTemplate(postId)));
+    @GetMapping("/template/{reviewId}")
+    public ResponseEntity<?> makeReviewTemplate(Authentication auth,@PathVariable Integer reviewId) {
+        return ResponseEntity.status(200).body(reviewService.makeReviewTemplate(auth.getName(),reviewId));
     }
 
 
@@ -95,9 +95,9 @@ public class ReviewController
     public ResponseEntity<?> getCompletedReviewsByPost (@PathVariable Integer postId, Authentication auth) {
         return ResponseEntity.status(200).body(reviewService.getCompletedReviewsByPost(postId, auth.getName()));
     }
-    @GetMapping("/assist/{postId}")
-    public ResponseEntity<?> reviewAssistance(@PathVariable Integer postId) {
-        return ResponseEntity.status(200).body(new ApiResponse(reviewService.reviewAssistance(postId)));
+    @GetMapping("/assist/{reviewId}")
+    public ResponseEntity<?> reviewAssistance(Authentication auth ,@PathVariable Integer postId) {
+        return ResponseEntity.status(200).body(reviewService.reviewAssistance(auth.getName(),postId));
     }
 
 }

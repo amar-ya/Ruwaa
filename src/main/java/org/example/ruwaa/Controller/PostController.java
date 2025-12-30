@@ -118,7 +118,7 @@ public class PostController
 
     @GetMapping("/review/{post_id}")
     public ResponseEntity<?> reviewMyWork(Authentication auth,@PathVariable Integer post_id) {
-        return ResponseEntity.status(200).body(new ApiResponse(postService.reviewMyWork(auth.getName(), post_id)));
+        return ResponseEntity.status(200).body(postService.reviewMyWork(auth.getName(), post_id));
     }
 
     @PutMapping("/improve-attachment/{post_id}")

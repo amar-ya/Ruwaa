@@ -139,6 +139,7 @@ public class AuthService  {
         u.setPassword(passwordEncoder.encode(auth.getPassword()));
         u.setCreatedAt(LocalDateTime.now());
         u.setRole("CUSTOMER");
+        u.setBalance(0.0);
         u.setPhone(auth.getPhone_number());
         usersRepository.save(u);
         Customer c = new Customer();
