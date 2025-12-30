@@ -78,4 +78,19 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 | شهد  |Figma Admin Flow |
 | شهد  | Figma Pages Improvement |
 
+| روان  | post CRUD model repository controller Service |
+| روان  | analyzeCustomerSkills - AI |
+| روان  | Moyasar Intigration - API |
+| روان  | OpenAi Antigriation - API |
+| روان  | getExpertByCategory |
+| روان  | applyDiscount |
+| روان  |Accept, Reject and Reject all reviews |
+| روان  | getPendingReviews |
+| روان  | getReviewsRequest |
+| روان  | getSentRequests |
+| روان  | getCompletedReviewsByPost |
+| روان  | Use case diagram|
+|روان | JUnit testing|
+| روان |Figma |
+
 ---
