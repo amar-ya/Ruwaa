@@ -20,13 +20,11 @@
 https://www.mermaidchart.com/app/projects/6d0bb644-7b8a-4e7e-8c97-7701b21579f9/diagrams/8948717c-0e80-4633-93a8-326f4de43cc7/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiODk0ODcxN2MtMGU4MC00NjMzLTkzYTgtMzI2ZjRkZTQzY2M3IiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc2NzEyNjA2N30.tu8Z_ObjTpSicw9FV1slDJwgP0h9hFZmFJFY0YImRTM
 
 -  **Postman API – Base Flow Documentation**  
-www.
+https://documenter.getpostman.com/view/31393047/2sBXVbJZNk
 
 -  **Presentaion**  
 https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content=DAG7YjxyTNo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
--  **postman documentation**  
-https://documenter.getpostman.com/view/31393047/2sBXVbJZNk
 ---
 
 
