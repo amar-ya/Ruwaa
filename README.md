@@ -77,7 +77,6 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
  شهد  | Figma Post Flow|
 | شهد  |Figma Admin Flow |
 | شهد  | Figma Pages Improvement |
-
 | روان  | post CRUD model repository controller Service |
 | روان  | analyzeCustomerSkills - AI |
 | روان  | Moyasar Intigration - API |
