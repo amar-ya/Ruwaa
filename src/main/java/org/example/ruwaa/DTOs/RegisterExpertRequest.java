@@ -28,9 +28,7 @@ public class RegisterExpertRequest
     @NotEmpty(message = "category is required")
     private String category;
 
-    @NotNull(message = "enter consultation price")
-    @PositiveOrZero(message = "must be positive or free")
-    private Double consult_price;
+
 
     //optinal
     private byte[] data;

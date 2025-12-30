@@ -82,7 +82,7 @@ public class AuthService  {
         e.setIsAvailable(false);
         e.setCategory(c);
         e.setLinkedin_url(auth.getLinkedin_url());
-        e.setConsult_price(auth.getConsult_price());
+        e.setConsult_price(0.0);
         e.setUsers(u);
         e.setCount_rating(0.0);
         e.setTotal_rating(0.0);
