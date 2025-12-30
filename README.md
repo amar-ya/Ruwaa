@@ -24,6 +24,9 @@ www.
 
 -  **Presentaion**  
 https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content=DAG7YjxyTNo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+-  **postman documentation**  
+https://documenter.getpostman.com/view/31393047/2sBXVbJZNk
 ---
 
 
@@ -77,7 +80,7 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
  شهد  | Figma Post Flow|
 | شهد  |Figma Admin Flow |
 | شهد  | Figma Pages Improvement |
-| روان  | post CRUD model repository controller Service |
+| روان  | review CRUD model repository controller Service |
 | روان  | analyzeCustomerSkills - AI |
 | روان  | Moyasar Intigration - API |
 | روان  | OpenAi Antigriation - API |
@@ -90,6 +93,20 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 | روان  | getCompletedReviewsByPost |
 | روان  | Use case diagram|
 |روان | JUnit testing|
-| روان |Figma |
-
+| عمار |payment logic |
+| عمار |subscribe |
+| عمار |gift subscription |
+| عمار |signup |
+| عمار |JWT set up |
+| عمار |login |
+| عمار |send email at review submittion |
+| عمار |send email at review rejection |
+| عمار |create chat |
+| عمار |send message |
+| عمار |display chat |
+| عمار |display profile |
+| عمار |add category |
+| عمار |crud operations |
+| عمار |application deployment |
+| عمار |database deployment |
 ---
