@@ -63,9 +63,9 @@ public class Users implements UserDetails
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "users")
     private List<Post> posts;
 
-    @OneToOne
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     @JsonIgnore
-    private Message message;
+    private Set<Message> message;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "users", orphanRemoval = true)
     private List<Card> cards;
