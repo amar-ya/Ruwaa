@@ -15,7 +15,9 @@
   https://www.figma.com/design/pcEfy5Lcon2ICeGnMe6mqk/Untitled?node-id=0-1&t=3ZOtMcUHkNJ8HPHm-1
 
 -  **Use Case Diagram**  
-  https://drive.google.com/file/d/1KpmDM5EN1G7fldjiL_ijgNSLWAnx_-1K/view?usp=sharing 
+  https://drive.google.com/file/d/1KpmDM5EN1G7fldjiL_ijgNSLWAnx_-1K/view?usp=sharing
+-  **Class Diagram**  
+https://www.mermaidchart.com/app/projects/6d0bb644-7b8a-4e7e-8c97-7701b21579f9/diagrams/8948717c-0e80-4633-93a8-326f4de43cc7/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiODk0ODcxN2MtMGU4MC00NjMzLTkzYTgtMzI2ZjRkZTQzY2M3IiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc2NzEyNjA2N30.tu8Z_ObjTpSicw9FV1slDJwgP0h9hFZmFJFY0YImRTM
 
 -  **Postman API – Base Flow Documentation**  
 www.
@@ -50,11 +52,27 @@ www.
 ---
 
 ##  أعضاء الفريق
+  - عمار يعقوب
+- شهد محمد الجعيثن
+- روان بدر برناوي
+
 
 | الاسم | قام بـ |
 |------|--------|
-| شهد محمد | تحليل المتطلبات |
-| عضو 2 | تطوير الواجهة الخلفية |
-| عضو 3 | تصميم الواجهة |
+| شهد  | post CRUD model repository controller |
+| شهد  | ReviewMyWork - AI |
+| شهد  | CreateTemplate - AI |
+| شهد  | ReviewAssistance - AI |
+| شهد  | Email Intigration - API |
+| شهد  | OpenAi Antigriation - API |
+| شهد  | Improving and Adding |
+| شهد  | Activate / reject Expert|
+| شهد  |Expert changing status 2 |
+| شهد  | Work Post changing visabilty 2 |
+|شهد | 3 Types Of Feed|
+| شهد | ViewPost 2|
+ شهد  | Figma Post Flow|
+| شهد  |Figma Admin Flow |
+| شهد  | Figma Pages Improvement |
 
 ---
