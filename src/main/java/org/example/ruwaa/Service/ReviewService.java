@@ -2,14 +2,22 @@ package org.example.ruwaa.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
+import org.example.ruwaa.DTOs.ReviewAIdto;
+import org.example.ruwaa.DTOs.ReviewAssistance;
 import org.example.ruwaa.DTOs.ReviewDTO;
+import org.example.ruwaa.DTOs.TemplateDTO;
 import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +36,7 @@ public class ReviewService
     private final AiService aiService;
     private final CardsRepository cardsRepository;
     private final MessageRepository messageRepository;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
 
     public List<Review> getAll(){
@@ -38,16 +47,6 @@ public class ReviewService
         return reviews;
     }
 
-//    public void add(Integer expert_id,Integer media_id,Review review){
-//        Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
-//
-//        Post m = mediaRepository.findPostById(media_id).orElseThrow(() -> new ApiException("post not found"));
-//        review.setRate(1);
-//        review.setHasRated(false);
-//        review.setPost(m);
-//        review.setExpert(e);
-//        reviewRepository.save(review);
-//    }
 
     public void update(Integer id, Review review){
         Review r = reviewRepository.findReviewById(id).orElseThrow(() -> new ApiException("review not found"));
@@ -102,13 +101,14 @@ public class ReviewService
 
     }
 
-
+     private Double refund=0.0;
     public void requestReview(String username, Integer expert_id,Integer workId){
+
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("expert not found"));
         Expert e = expertRepository.findExpertById(expert_id).orElseThrow(() -> new ApiException("expert not found"));
         if(!e.getIsActive()) throw new ApiException("expert account not activated yet");
         if(!e.getIsAvailable()) throw new ApiException("expert is busy");
-
+       // Double refund=0.0;
 
         Post p = mediaRepository.findPostById(workId).orElseThrow(() -> new ApiException("work not found"));
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
@@ -120,9 +120,11 @@ public class ReviewService
         if(s == null || s.getEnd_date().isBefore(LocalDateTime.now())){
             Double amount = e.getConsult_price()+(e.getConsult_price()*0.2);
             paymentService.processPayment(amount,p.getUsers().getCards().get(0));
+            refund=amount;
         }else {
             Double amount = e.getConsult_price()+(e.getConsult_price()*0.1);
             paymentService.processPayment(amount,p.getUsers().getCards().get(0));
+            refund=amount;
         }
         Review review = new Review();
         review.setStatus("Pending"); ///****************Check regex
@@ -137,6 +139,20 @@ public class ReviewService
                 "View request link: localhost:8080/api/v1/post/view/work/"+p.getUsers().getId()+"\n\n" +
                 "Work content: "+p.getContent();
         sendMailService.sendMessage(e.getUsers().getEmail(),"New Review Request From "+p.getUsers().getName(),body);
+        //if 24H pass without accepting request, refund money
+        scheduler.schedule(() -> {
+            if(!review.getStatus().equals("Accepted")||!review.getStatus().equals("Completed")) {
+                //if(user.getBalance()==null) user.setBalance(0.0);
+
+
+               user.setBalance(user.getBalance()+refund);
+               usersRepository.save(user);
+               sendMailService.sendMessage(user.getEmail(),"Refund Successful","your request for rating "+e.getUsers().getUsername()+" didn't get approve for 24H. So, we refunded your money.");
+                review.setStatus("Rejected");
+                reviewRepository.save(review);
+            }
+        }, 24, TimeUnit.HOURS);
+
     }
 
 
@@ -278,55 +294,72 @@ public class ReviewService
         }
         return completed;
     }
+    private String extractJsonArray(String response) {
+        int start = response.indexOf('[');
+        int end = response.lastIndexOf(']');
+        if (start == -1 || end == -1) {
+            throw new RuntimeException("No JSON array found in AI response");
+        }
+        return response.substring(start, end + 1);
+    }
+    public ArrayList<TemplateDTO> makeReviewTemplate(String username, Integer reviewId){
+        Expert expert = expertRepository.findExpertByUsername(username).orElseThrow(() -> new ApiException("Customer not found"));
 
-    public String makeReviewTemplate(Integer postId){
-        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()->new ApiException("review not found"));
+        if(!review.getExpert().equals(expert)) throw new ApiException("unAuthorized");
+        Post p =  review.getPost();
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
         //AI
-        String work = aiService.dtoPost(p);
-        return  aiService.askAI("بناءًا على العمل المعطى (قد يكون كود برمجي، عمل فني، الخ)\n" +
-                "ابيك تجيب المعايير القياسية الفعلية\n" +
-                "بشكل مباشر مثلا:\n" +
-                "المعايير الأساسية لتقييم الرسمة الرقمية الفنية\n" +
-                "1.  المنظور (Perspective)\n" +
-                "2.  التشريح والنِسَب (Anatomy & Proportion) (للشخصيات)\n" +
-                "الخ..\n" +
-                "\n" +
-                "المهم ابيك تعطينياها مباشرة وبدون ايموجي\n" +
-                "\n" +
-                "\n"+work);
+        //String prompt = "You are a professional critic and expert will help other critic .You will be provided with a work that may be one of the following types:(programming code, literary text, poetry, artwork, design, or any other creative work).Requirements:1. Automatically identify the type of work based on its content.2. Select the appropriate standard evaluation criteria for this field (such as clarity, structure, creativity, details, performance, style, depending on the type of work). Strict conditions:- Do not commit to a fixed number of criteria; choose the appropriate number based on the nature of the work.- Use formal and professional Arabic.- Do not use emojis. -Do not add any explanation or extra - Make the evaluation realistic and non-flattering.   expected answer example (1.الأصالة والإبداع) The work to be analyzed: ";
+        String prompt = "You are a professional critic and expert. Your task is to identify ONLY the standard evaluation criteria titles suitable for the given work. Return ONLY a valid JSON array where each element contains exactly one field named 'criteria'. Do NOT include explanations, ratings, comments, markdown, backticks, or extra text. Use formal Arabic. Example format: [{\"criteria\":\"1.الوضوح\"}]. The work to be analyzed: ";
+
+        prompt+=aiService.dtoPost(p);
+        String result =  aiService.askAI(prompt);
+         result =  extractJsonArray(result);
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            List<TemplateDTO> parsed =
+                    mapper.readValue(result, new TypeReference<List<TemplateDTO>>() {});
+            return new ArrayList<>(parsed);
+
+        } catch (Exception e) {
+            System.out.println("AI:"+e.getMessage());
+            return new ArrayList<>();
+        }
+
+
     }
 
-    public String reviewAssistance(Integer postId){
-        Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
+    public ArrayList<ReviewAssistance> reviewAssistance(String username,Integer reviewId){
+        Expert expert = expertRepository.findExpertByUsername(username).orElseThrow(() -> new ApiException("Customer not found"));
+
+        Review review = reviewRepository.findReviewById(reviewId).orElseThrow(()->new ApiException("review not found"));
+        if(!review.getExpert().equals(expert)) throw new ApiException("unAuthorized");
+        Post p =  review.getPost();
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
         //AI
+        String prompt = "You are a professional critic and expert.You will be provided with a work that may be one of the following types:(programming code, literary text, poetry, artwork, design, or any other creative work).Requirements:1. Automatically identify the type of work based on its content.2. Select the appropriate standard evaluation criteria for this field (such as clarity, structure, creativity, details, performance, style, depending on the type of work). 3.Provided helpful tools af any. The output must be JSON only (with no additional text),formatted as a list (array) of objects, where each object represents exactly one criterion, using the following structure:{   \"criteria\": \"Name of the criterion\",  \"helpfulQues\": \"What question might help any critic to rate the criterion \",  \"tools\": \"helpful tools for rating, if any or says none\"}Strict conditions:- Do not commit to a fixed number of criteria; choose the appropriate number based on the nature of the work.- Use formal and professional Arabic.- Do not use emojis. -Do not add any explanation outside the JSON. - Make the evaluation realistic and non-flattering. The work to be analyzed: ";
+        prompt+=aiService.dtoPost(p);
 
-        String work = aiService.dtoPost(p);
-        return aiService.askAI("بناءًا على العمل المعطى (قد يكون كود برمجي، عمل فني، الخ)\n" +
-                "ابيك تجيب المعايير القياسية الفعلية\n" +
-                "بشكل مباشر مع ذكر الاسئلة والادوات اللتي قد تساعد، مثلا: \n" +
-                "المعايير الأساسية لتقييم الرسمة الرقمية الفنية\n" +
-                "1. التكوين (Composition) \n" +
-                "\n" +
-                "\n" +
-                " هل عين المشاهد تُقاد بذكاء؟\n" +
-                " هل هناك نقطة تركيز واضحة؟\n" +
-                " هل الفراغ مستغل جيدًا؟\n" +
-                "\n" +
-                "أدوات تقييم:\n" +
-                "\n" +
-                "Rule of thirds\n" +
-                "Balance\n" +
-                "Visual hierarchy\n" +
-                "Negative space\n" +
-                "\n" +
-                "\n" +
-                "عطني الاجابة فقط \n" +
-                " مباشرة وبدون ايموجي \n" +
-                " "+work);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+
+
+            String aiResponse = aiService.askAI(prompt);
+            aiResponse = extractJsonArray(aiResponse);
+            List<ReviewAssistance> parsed =
+                    mapper.readValue(aiResponse, new TypeReference<List<ReviewAssistance>>() {});
+            return new ArrayList<>(parsed);
+
+        } catch (Exception e) {
+            System.out.println("AI:"+e.getMessage());
+            return new ArrayList<>();
+        }
+
+
     }
 
 

@@ -36,6 +36,7 @@ public class SubscriptionService
 
     public void subscribeThreeMonths(String username){
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+       if(c.getUsers().getCards().isEmpty()||c.getUsers().getCards()==null) throw new ApiException("add card first");
         paymentService.processPayment((15.0*3)-5,c.getUsers().getCards().get(0));
         if(c.getSubscription() != null){
             c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(3));
@@ -51,6 +52,8 @@ public class SubscriptionService
 
     public void subscribeSixMonths(String username){
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if(c.getUsers().getCards().isEmpty()||c.getUsers().getCards()==null) throw new ApiException("add card first");
+
         paymentService.processPayment((15.0*6)-10,c.getUsers().getCards().get(0));
         if(c.getSubscription() != null){
             c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(6));

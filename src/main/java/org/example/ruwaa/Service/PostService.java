@@ -3,11 +3,14 @@ package org.example.ruwaa.Service;
 import lombok.RequiredArgsConstructor;
 import org.example.ruwaa.Api.ApiException;
 import org.example.ruwaa.DTOs.LearningContentDTO;
+import org.example.ruwaa.DTOs.ReviewAIdto;
 import org.example.ruwaa.DTOs.WorkPostDTO;
 import org.example.ruwaa.Model.*;
 import org.example.ruwaa.Repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -198,8 +201,16 @@ public class PostService
         return postRepository.findPostByUsers_id(user.getId());
     }
 
+    private String extractJsonArray(String response) {
+        int start = response.indexOf('[');
+        int end = response.lastIndexOf(']');
+        if (start == -1 || end == -1) {
+            throw new RuntimeException("No JSON array found in AI response");
+        }
+        return response.substring(start, end + 1);
+    }
 
-    public String reviewMyWork(String username, Integer postId){
+    public ArrayList<ReviewAIdto> reviewMyWork(String username, Integer postId){
         Users u =  usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Post p = postRepository.findPostById(postId).orElseThrow(() -> new ApiException("post not found"));
         if (u != p.getUsers()){
@@ -211,21 +222,24 @@ public class PostService
         if(!p.getType().equals("public_work")&&!p.getType().equals("private_work")) throw new ApiException("this is not work post");
 
 
-        String dtoString = " بناءًا على العمل المعطى (قد يكون كود برمجي، عمل فني، الخ) ابيك تقييم هذا العمل بمعايير قياسية فعلية، وتعطيني الاجابة مباشرة وبدون ايموجي التقييم من 5، الأسلوب والهوية الفنية (Style & Originality)" +
-                "الأسلوب والهوية الفنية (Style & Originality)" +
-                " ما حققته:" +
-                "أسلوب شاعري واضح." +
-                "حس تعبيري أقرب للفن المعاصر." +
-                "العمل يبدو “صوتًا واحدًا” لا تجميع تقنيات." +
-                "ما خالفته / يمكن تحسينه:" +
-                "الأسلوب قريب من مدارس معروفة؛ يحتاج توقيعًا شخصيًا أقوى." +
-                "التقييم:  (4/5)"
-                ;
 
+          String dtoString = "You are a professional critic and expert.You will be provided with a work that may be one of the following types:(programming code, literary text, poetry, artwork, design, or any other creative work).Requirements:1. Automatically identify the type of work based on its content.2. Select the appropriate standard evaluation criteria for this field (such as clarity, structure, creativity, details, performance, style, depending on the type of work).3. Evaluate the work in a professional and balanced manner.The output must be JSON only (with no additional text),formatted as a list (array) of objects, where each object represents exactly one criterion, using the following structure:{  \"rate\": \"Numeric rating from 1 to 5 (can be decimal such as 3.8/5)\",  \"criteria\": \"Name of the criterion\",  \"comment\": \"What the work achieved under this criterion\",  \"suggestion\": \"What can be improved or constructive feedback\"}Strict conditions:- Do not commit to a fixed number of criteria; choose the appropriate number based on the nature of the work.- Use formal and professional Arabic.- Do not use emojis. -Do not add any explanation outside the JSON. - Make the evaluation realistic and non-flattering. The work to be analyzed: "
+;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            dtoString += aiService.dtoPost(p);
 
-             dtoString += aiService.dtoPost(p);
+         String aiResponse = aiService.askAI(dtoString);
+        aiResponse = extractJsonArray(aiResponse);
+            List<ReviewAIdto> parsed =
+                    mapper.readValue(aiResponse, new TypeReference<List<ReviewAIdto>>() {});
+            return new ArrayList<>(parsed);
 
-        return  aiService.askAI(dtoString);
+        } catch (Exception e) {
+            System.out.println("AI:"+e.getMessage());
+            return new ArrayList<>();
+        }
+
     }
 
     public void changeVisibilityToPublic(String username, Integer postId){

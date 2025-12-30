@@ -102,7 +102,7 @@ public class ExpertService
     public Double getExpertRateAverage(String username, Integer expertId){
         Users user = usersRepository.findUserByUsername(username).orElseThrow(()-> new ApiException("user not found"));
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(() -> new ApiException("expert not found"));
-
+        if(expert.getCount_rating()==0) return 1.0; //minimum star is 1
         return expert.getTotal_rating()/expert.getCount_rating();
     }
 
