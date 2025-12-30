@@ -9,6 +9,7 @@ import org.example.ruwaa.Model.Users;
 import org.example.ruwaa.Repository.ChatRepository;
 import org.example.ruwaa.Repository.MessageRepository;
 import org.example.ruwaa.Repository.UsersRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,21 +48,44 @@ public class MessageService
         messageRepository.save(m);
     }
 
-    public void update(Integer id, String text){
+    public void update(String username, Integer id, String text){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Message m = messageRepository.findMessageById(id).orElseThrow(() -> new ApiException("message not found"));
+        if (u != m.getUsers()){
+            throw new ApiException("you are not allowed to edit this message");
+        }
 
         m.setText(text);
         messageRepository.save(m);
     }
 
-    public void delete(Integer id){
+    public void delete(String username,Integer id){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         Message m = messageRepository.findMessageById(id).orElseThrow(() -> new ApiException("message not found"));
-
+        if (u != m.getUsers()){
+            throw new ApiException("you are not allowed to delete this message");
+        }
         messageRepository.delete(m);
     }
 
-    public List<Message> displayChat(Integer chat_id){
-       return messageRepository.findAllMessagesByChatId(chat_id).orElseThrow(() -> new ApiException("chat not found"));
+    public List<ChatBoxDTO> displayChat(String username, Integer chat_id){
+        Users u = usersRepository.findUserByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        Chat c = chatRepository.findChatById(chat_id).orElseThrow(() -> new ApiException("chat not found"));
+        if (u != c.getReview().getPost().getUsers() && u != c.getReview().getExpert().getUsers()){
+            throw new ApiException("you are not allowed to see this chat");
+        }
+        List<Message> messages = messageRepository.findAllMessagesByChatId(chat_id).orElseThrow(() -> new ApiException("chat not found"));
+        System.out.println(messages.get(0).getUsers());
+        List<ChatBoxDTO> chat= new ArrayList<>();
+        for (Message m : messages){
+            ChatBoxDTO dto = new ChatBoxDTO();
+            dto.setSender(usersRepository.findUserByMessageId(m.getId()).getName());
+            dto.setText(m.getText());
+            dto.setDate(m.getSent_at());
+            chat.add(dto);
+        }
+        return chat;
+
 
     }
 }

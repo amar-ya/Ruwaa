@@ -24,7 +24,7 @@ public class Message
 
     private LocalDateTime sent_at;
 
-    @OneToOne(mappedBy = "message")
+    @ManyToOne
     private Users users;
 
     @ManyToOne

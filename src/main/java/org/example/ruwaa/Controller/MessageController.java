@@ -24,6 +24,18 @@ public class MessageController
 
     @GetMapping("/display-chat/{chat_id}")
     public ResponseEntity<?> displayChat(@PathVariable Integer chat_id, Authentication auth){
-        return ResponseEntity.status(200).body(messageService.displayChat(chat_id));
+        return ResponseEntity.status(200).body(messageService.displayChat(auth.getName(), chat_id));
+    }
+
+    @PutMapping("/edit-message/{message_id}")
+    public ResponseEntity<?> editMessage(Authentication auth,@PathVariable Integer message_id, @RequestBody String message){
+        messageService.update(auth.getName(),message_id,message);
+        return ResponseEntity.status(200).body(new ApiResponse("message edited successfully"));
+    }
+
+    @DeleteMapping("/delete-message/{message_id}")
+    public ResponseEntity<?> deleteMessage(@PathVariable Integer message_id, Authentication auth){
+        messageService.delete(auth.getName(),message_id);
+        return ResponseEntity.status(200).body(new ApiResponse("message deleted successfully"));
     }
 }
