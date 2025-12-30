@@ -21,8 +21,7 @@ public class ChatController
 
 
     @GetMapping("/get")
-    public ResponseEntity<?> getAll(Authentication auth){
-        System.out.println("authority:"+auth.getAuthorities()+"\nname:"+auth.getName()+"credentials:"+auth.getCredentials());
+    public ResponseEntity<?> getAll(){
         return ResponseEntity.status(200).body(chatService.getAll());
     }
 
@@ -30,7 +29,7 @@ public class ChatController
     public ResponseEntity<?> create(@RequestBody @Valid Chat chat){
 
         chatService.save(chat);
-        return ResponseEntity.status(200).body(chat);
+        return ResponseEntity.status(200).body(new ApiResponse("chat created successfully"));
     }
 
     @PutMapping("/close/{id}")
