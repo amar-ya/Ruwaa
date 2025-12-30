@@ -20,7 +20,7 @@ public class OpenAiService {
     @Value("${openai.api.key}")
     private String apiKey;
 
-    public Map<String, Object> analyzeText(String prompt) {
+    public String analyzeText(String prompt) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
@@ -41,7 +41,8 @@ public class OpenAiService {
                 Map.class
         );
 
-        return response.getBody();
+        Map<String, Object> choice = ((List<Map<String, Object>>) response.getBody().get("choices")).get(0);
+        Map<String, Object> message = (Map<String, Object>) choice.get("message");
+        return ((String) message.get("content")).trim();
     }
 }
-

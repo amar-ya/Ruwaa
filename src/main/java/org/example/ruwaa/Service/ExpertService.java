@@ -81,7 +81,6 @@ public class ExpertService
         Expert expert = expertRepository.findExpertById(user.getId()).orElseThrow(() -> new ApiException("Expert not found"));
 
         if(days<1) throw new ApiException("invalid date");
-        if(discountPercentage>expert.getConsult_price()) throw new ApiException("Invalid discount!");
         Double originalPrice = expert.getConsult_price();
         double newPrice = originalPrice * (1 - discountPercentage / 100);
         expert.setConsult_price(newPrice);
@@ -124,7 +123,6 @@ public class ExpertService
                 expert = expert1;
             }
         }
-
         return  expert;
     }
 
@@ -143,9 +141,10 @@ public class ExpertService
     post.getUsers().setBalance(post.getUsers().getBalance()+credit);
     postRepository.save(post);
 
-    }
+         }
     return "total of "+countPost+" learning content has achieved +"+views+"Views. Credit sent to expert successfully";
     }
+
 
     public void activateExpert(Integer expertId){
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(()-> new ApiException("expert not found"));
@@ -154,6 +153,7 @@ public class ExpertService
         expert.setIsAvailable(true);
         expertRepository.save(expert);
     }
+
 
     public void rejectExpert(Integer expertId){
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(()-> new ApiException("expert not found"));
