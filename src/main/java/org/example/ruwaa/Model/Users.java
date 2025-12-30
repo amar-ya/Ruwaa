@@ -33,14 +33,14 @@ public class Users implements UserDetails
     private String about_me;
 
     private String name;
-    @Column(columnDefinition = "varchar(20) unique not null")
+    @Column(columnDefinition = "varchar(20) not null", unique = true)
     private String username;
 
     private String password;
-    @Column(columnDefinition = "varchar(50) unique not null")
+    @Column(columnDefinition = "varchar(50) not null", unique = true)
     private String email;
 
-    @Column(columnDefinition = "varchar(13) unique not null")
+    @Column(columnDefinition = "varchar(13) not null", unique = true)
     private String phone;
     @Column(columnDefinition = "varchar(10) not null")
     private String role;
