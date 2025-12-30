@@ -96,8 +96,8 @@ public class ReviewController
         return ResponseEntity.status(200).body(reviewService.getCompletedReviewsByPost(postId, auth.getName()));
     }
     @GetMapping("/assist/{reviewId}")
-    public ResponseEntity<?> reviewAssistance(Authentication auth ,@PathVariable Integer postId) {
-        return ResponseEntity.status(200).body(reviewService.reviewAssistance(auth.getName(),postId));
+    public ResponseEntity<?> reviewAssistance(Authentication auth ,@PathVariable Integer reviewId) {
+        return ResponseEntity.status(200).body(reviewService.reviewAssistance(auth.getName(),reviewId));
     }
 
 }

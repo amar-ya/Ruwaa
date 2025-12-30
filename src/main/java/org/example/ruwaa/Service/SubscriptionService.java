@@ -73,10 +73,10 @@ public class SubscriptionService
             throw new ApiException("you dont have cards");
         }
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
-        paymentService.processPayment(15.0,gifer.getUsers().getCards().get(0));
         if (gifer == c){
             throw new ApiException("you cant gift subscription to your self");
         }
+        paymentService.processPayment(15.0,gifer.getUsers().getCards().get(0));
         if(c.getSubscription() != null){
             c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(1));
             subscriptionRepository.save(c.getSubscription());
@@ -95,6 +95,9 @@ public class SubscriptionService
             throw new ApiException("you dont have cards");
         }
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if (gifer == c){
+            throw new ApiException("you cant gift subscription to your self");
+        }
         paymentService.processPayment((15.0*3)-5,gifer.getUsers().getCards().get(0));
         if(c.getSubscription() != null){
             c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(3));
@@ -114,6 +117,9 @@ public class SubscriptionService
             throw new ApiException("you dont have cards");
         }
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
+        if (gifer == c){
+            throw new ApiException("you cant gift subscription to your self");
+        }
         paymentService.processPayment((15.0*6)-10,gifer.getUsers().getCards().get(0));
         if(c.getSubscription() != null){
             c.getSubscription().setEnd_date(c.getSubscription().getEnd_date().plusMonths(6));
@@ -130,7 +136,7 @@ public class SubscriptionService
     public Subscription getSubscription(String username){
         Customer c = customerRepository.findCustomerByUsername(username).orElseThrow(() -> new ApiException("user not found"));
         if(c.getSubscription() == null){
-            throw new ApiException("you have never subscribed yet");
+            throw new ApiException("you have not subscribed yet");
         }
         return c.getSubscription();
     }
