@@ -20,6 +20,12 @@ public class RegisterCustomerRequest
     private String name;
     @NotEmpty(message = "username is required")
     private String username;
+    @Size(min = 8, max = 20)
+    @NotEmpty(message = "password is required")
+    @Pattern(
+            regexp = "^[A-Za-z0-9]+$",
+            message = "Password must be at least 8 characters long and contain letters and numbers"
+    )
     @NotEmpty(message = "password is required")
     private String password;
     @NotEmpty(message = "enter phone number")

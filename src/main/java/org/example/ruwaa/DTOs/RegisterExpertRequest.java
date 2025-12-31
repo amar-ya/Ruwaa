@@ -12,7 +12,12 @@ public class RegisterExpertRequest
 {
     @NotEmpty(message = "username is required")
     private String username;
+    @Size(min = 8, max = 20)
     @NotEmpty(message = "password is required")
+    @Pattern(
+            regexp = "^[A-Za-z0-9]+$",
+            message = "Password must be at least 8 characters long and contain letters and numbers"
+    )
     private String password;
     @Email
     @NotEmpty(message = "email is required")
@@ -27,6 +32,7 @@ public class RegisterExpertRequest
     private String name;
     @NotEmpty(message = "category is required")
     private String category;
+    private Double c_price;
 
 
 

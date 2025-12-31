@@ -73,6 +73,7 @@ public class AuthService  {
         u.setCreatedAt(LocalDateTime.now());
         u.setAbout_me("Hello I am new!");
         u.setBalance(0.0);
+        u.setCreatedAt(LocalDateTime.now());
         u.setRole("EXPERT");
         usersRepository.save(u);
 
@@ -86,7 +87,8 @@ public class AuthService  {
         e.setUsers(u);
         e.setCount_rating(0.0);
         e.setTotal_rating(0.0);
-        e.setReview_count(0);
+        if (auth.getC_price() == null){e.setReview_count(0);}
+        e.setConsult_price(auth.getC_price());
         if(auth.getData()!=null) e.setData(auth.getData());
 
         expertRepository.save(e);

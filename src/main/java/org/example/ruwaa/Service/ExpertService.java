@@ -154,6 +154,12 @@ public class ExpertService
         expertRepository.save(expert);
     }
 
+    public void changeConsultPrice(String username,Double amount){
+        Expert e = expertRepository.findExpertByUsername(username).orElseThrow(() -> new ApiException("username not found"));
+        e.setConsult_price(amount);
+        expertRepository.save(e);
+    }
+
 
     public void rejectExpert(Integer expertId){
         Expert expert = expertRepository.findExpertById(expertId).orElseThrow(()-> new ApiException("expert not found"));

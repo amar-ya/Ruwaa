@@ -89,4 +89,10 @@ public class ExpertController
         expertService.setBusy(auth.getName());
         return ResponseEntity.status(200).body(new ApiResponse("Status set to busy"));
     }
+
+    @PutMapping("/change-consultation-price/{amount}")
+    public ResponseEntity<?> changeConsultationPrice(Authentication auth,@PathVariable Double amount){
+        expertService.changeConsultPrice(auth.getName(), amount);
+        return ResponseEntity.status(200).body(new ApiResponse("change consultation price successful"));
+    }
 }
