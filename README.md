@@ -81,9 +81,9 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 | عمار | CRUD operations |
 | عمار | application deployment |
 | عمار | database deployment |
+| عمار | CreateTemplate – AI |
 | شهد | post CRUD (model, repository, controller) |
 | شهد | ReviewMyWork – AI |
-| شهد | CreateTemplate – AI |
 | شهد | ReviewAssistance – AI |
 | شهد | Email Integration – API |
 | شهد | OpenAI Integration – API |
