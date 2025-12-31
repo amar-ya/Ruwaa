@@ -60,13 +60,11 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 - **شهد محمد الجعيثن**
 - **روان بدر برناوي**
 
--
-- 
 
 
 
 
-| الاسم | قام بـ |
+| الاسم | قام |
 |------|--------||
 | عمار |payment logic |
 | عمار |subscribe |
