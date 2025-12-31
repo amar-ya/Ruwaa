@@ -63,51 +63,49 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 
 
 
-
 | الاسم | قام |
-|------|--------||
-| عمار |payment logic |
-| عمار |subscribe |
-| عمار |gift subscription |
-| عمار |signup |
-| عمار |JWT set up |
-| عمار |login |
-| عمار |send email at review submittion |
-| عمار |send email at review rejection |
-| عمار |create chat |
-| عمار |send message |
-| عمار |display chat |
-| عمار |display profile |
-| عمار |add category |
-| عمار |crud operations |
-| عمار |application deployment |
-| عمار |database deployment |
-| شهد  | post CRUD model repository controller |
-| شهد  | ReviewMyWork - AI |
-| شهد  | CreateTemplate - AI |
-| شهد  | ReviewAssistance - AI |
-| شهد  | Email Intigration - API |
-| شهد  | OpenAi Antigriation - API |
-| شهد  | Improving and Adding |
-| شهد  | Activate / reject Expert|
-| شهد  |Expert changing status 2 |
-| شهد  | Work Post changing visabilty 2 |
-|شهد | 3 Types Of Feed|
-| شهد | ViewPost 2|
- شهد  | Figma Post Flow|
-| شهد  |Figma Admin Flow |
-| شهد  | Figma Pages Improvement |
-| روان  | review CRUD model repository controller Service |
-| روان  | analyzeCustomerSkills - AI |
-| روان  | Moyasar Intigration - API |
-| روان  | OpenAi Antigriation - API |
-| روان  | getExpertByCategory |
-| روان  | applyDiscount |
-| روان  |Accept, Reject and Reject all reviews |
-| روان  | getPendingReviews |
-| روان  | getReviewsRequest |
-| روان  | getSentRequests |
-| روان  | getCompletedReviewsByPost |
-| روان  | Use case diagram|
-|روان | JUnit testing|
----
+|------|-----|
+| عمار | payment logic |
+| عمار | subscribe |
+| عمار | gift subscription |
+| عمار | signup |
+| عمار | JWT set up |
+| عمار | login |
+| عمار | send email at review submission |
+| عمار | send email at review rejection |
+| عمار | create chat |
+| عمار | send message |
+| عمار | display chat |
+| عمار | display profile |
+| عمار | add category |
+| عمار | CRUD operations |
+| عمار | application deployment |
+| عمار | database deployment |
+| شهد | post CRUD (model, repository, controller) |
+| شهد | ReviewMyWork – AI |
+| شهد | CreateTemplate – AI |
+| شهد | ReviewAssistance – AI |
+| شهد | Email Integration – API |
+| شهد | OpenAI Integration – API |
+| شهد | Improving and Adding |
+| شهد | Activate / Reject Expert |
+| شهد | Expert changing status |
+| شهد | Work Post changing visibility |
+| شهد | 3 Types of Feed |
+| شهد | View Post |
+| شهد | Figma Post Flow |
+| شهد | Figma Admin Flow |
+| شهد | Figma Pages Improvement |
+| روان | review CRUD (model, repository, controller, service) |
+| روان | analyzeCustomerSkills – AI |
+| روان | Moyasar Integration – API |
+| روان | OpenAI Integration – API |
+| روان | getExpertByCategory |
+| روان | applyDiscount |
+| روان | Accept / Reject / Reject all reviews |
+| روان | getPendingReviews |
+| روان | getReviewsRequest |
+| روان | getSentRequests |
+| روان | getCompletedReviewsByPost |
+| روان | Use case diagram |
+| روان | JUnit testing |
