@@ -56,13 +56,32 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 ---
 
 ##  أعضاء الفريق
-  - عمار يعقوب
-- شهد محمد الجعيثن
-- روان بدر برناوي
+**عمار يعقوب**
+**شهد محمد الجعيثن**
+**روان بدر برناوي**
+
+-
+- 
 
 
 | الاسم | قام بـ |
-|------|--------|
+|------|--------||
+| عمار |payment logic |
+| عمار |subscribe |
+| عمار |gift subscription |
+| عمار |signup |
+| عمار |JWT set up |
+| عمار |login |
+| عمار |send email at review submittion |
+| عمار |send email at review rejection |
+| عمار |create chat |
+| عمار |send message |
+| عمار |display chat |
+| عمار |display profile |
+| عمار |add category |
+| عمار |crud operations |
+| عمار |application deployment |
+| عمار |database deployment |
 | شهد  | post CRUD model repository controller |
 | شهد  | ReviewMyWork - AI |
 | شهد  | CreateTemplate - AI |
@@ -91,20 +110,4 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 | روان  | getCompletedReviewsByPost |
 | روان  | Use case diagram|
 |روان | JUnit testing|
-| عمار |payment logic |
-| عمار |subscribe |
-| عمار |gift subscription |
-| عمار |signup |
-| عمار |JWT set up |
-| عمار |login |
-| عمار |send email at review submittion |
-| عمار |send email at review rejection |
-| عمار |create chat |
-| عمار |send message |
-| عمار |display chat |
-| عمار |display profile |
-| عمار |add category |
-| عمار |crud operations |
-| عمار |application deployment |
-| عمار |database deployment |
 ---
