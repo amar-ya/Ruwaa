@@ -78,7 +78,10 @@ https://www.canva.com/design/DAG7YjxyTNo/OpqC8TO_he5w_xoKvDo0JA/edit?utm_content
 | عمار | display chat |
 | عمار | display profile |
 | عمار | add category |
-| عمار | CRUD operations |
+| عمار | Auth CRUD operations |
+| عمار | Customer CRUD operations |
+| عمار | Expert CRUD operations |
+| عمار | category CRUD operations |
 | عمار | application deployment |
 | عمار | database deployment |
 | عمار | CreateTemplate – AI |
